@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Medical Rotations Finder 💜</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .filters-panel {
+            background: #f8f7ff;
+            padding: 15px 30px;
+            border-bottom: 2px solid #e9d5ff;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #6b21a8;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #d8b4fe;
+            border-radius: 6px;
+            font-size: 0.9em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select:hover, input:hover {
+            border-color: #a855f7;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #7c3aed;
+            border: 2px solid #7c3aed;
+        }
+
+        .stats-bar {
+            background: white;
+            padding: 10px 30px;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e9d5ff;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-label {
+            color: #6b21a8;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .stat-value {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85em;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar {
+            width: 400px;
+            background: white;
+            overflow-y: auto;
+            border-left: 2px solid #e9d5ff;
+        }
+
+        .sidebar-header {
+            background: #f8f7ff;
+            padding: 15px;
+            border-bottom: 2px solid #e9d5ff;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .sidebar-header h2 {
+            color: #6b21a8;
+            font-size: 1.1em;
+        }
+
+        .rotation-list {
+            padding: 10px;
+        }
+
+        .rotation-card {
+            background: white;
+            border: 2px solid #e9d5ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .rotation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(124, 58, 237, 0.15);
+            border-color: #a855f7;
+        }
+
+        .rotation-card.selected {
+            border-color: #7c3aed;
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .rotation-name {
+            font-weight: 700;
+            color: #6b21a8;
+            margin-bottom: 10px;
+            font-size: 0.98em;
+            line-height: 1.4;
+        }
+
+        .rotation-details {
+            font-size: 0.85em;
+            color: #64748b;
+        }
+
+        .rotation-detail-row {
+            margin-bottom: 4px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6b21a8;
+        }
+
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #fef3c7;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .spec-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            color: #6b21a8;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: 600;
+            border: 1px solid #e9d5ff;
+            transition: all 0.2s;
+        }
+        
+        .spec-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
+        }
+        
+        .hospital-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            border: 1px solid #93c5fd;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .hospital-badge:hover {
+            transform: translateY(-1px) scale(1.05);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+            background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+            border-color: #60a5fa;
+        }
+
+        /* Distance label styling */
+        .distance-label {
+            background: white;
+            border: 2px solid #9333ea;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #6b21a8;
+            box-shadow: 0 2px 6px rgba(147, 51, 234, 0.3);
+            white-space: nowrap;
+        }
+
+        .london-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .london-controls label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b21a8;
+            font-weight: 600;
+            font-size: 0.85em;
+            cursor: pointer;
+        }
+
+        .london-controls input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .commute-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            max-width: 350px;
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid #e9d5ff;
+        }
+
+        .commute-info.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .commute-info h3 {
+            color: #6b21a8;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+
+        .commute-item {
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            background: #faf5ff;
+            border-radius: 8px;
+            border: 1px solid #f3e8ff;
+            transition: all 0.2s;
+        }
+        
+        .commute-item:hover {
+            background: #f3e8ff;
+            transform: translateX(2px);
+        }
+
+        .commute-mode {
+            font-weight: 600;
+            color: #7c3aed;
+            margin-bottom: 4px;
+        }
+
+        .no-results {
+            padding: 40px;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px;
+            padding: 0;
+        }
+
+        .popup-content {
+            padding: 15px;
+        }
+
+        .popup-title {
+            font-weight: 700;
+            color: #6b21a8;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .popup-detail {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .popup-specialties {
+            margin-top: 10px;
+        }
+
+        .hospital-marker {
+            z-index: 1000 !important;
+        }
+
+        .hospital-marker div {
+            animation: hospitalPulse 2s infinite;
+        }
+
+        @keyframes hospitalPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 300px;
+                border-left: none;
+                border-top: 2px solid #e9d5ff;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .filters-panel {
+                padding: 10px 15px;
+            }
+
+            .stats-bar {
+                padding: 10px 15px;
+            }
+
+            .sidebar {
+                max-height: 250px;
+            }
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3e8ff;
+            border-top: 4px solid #7c3aed;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div style="color: #6b21a8; font-weight: 600;">Loading rotations...</div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🏥 UK Medical Rotations Finder 💜</h1>
+            <p class="subtitle">Comprehensive rotation database with maps, commute info & hospital ratings</p>
+        </header>
+
+        <div class="filters-panel">
+            <div class="filter-group">
+                <label>Specialization</label>
+                <select id="specialtyFilter">
+                    <option value="">All Specializations</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Exclude Specializations</label>
+                <select id="excludeSpecialtiesFilter" multiple size="4" style="font-size: 0.85em;">
+                    <!-- Will be populated dynamically -->
+                </select>
+                <small style="font-size: 0.75em; color: #64748b; margin-top: 4px; display: block;">
+                    Hold Ctrl/Cmd to select multiple
+                </small>
+            </div>
+            <div class="filter-group">
+                <label>Region</label>
+                <select id="regionFilter">
+                    <option value="">All Regions</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Location</label>
+                <select id="locationFilter">
+                    <option value="">All Locations</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Min Rating</label>
+                <input type="number" id="ratingFilter" min="0" max="5" step="0.1" placeholder="e.g., 4.0">
+            </div>
+            <div class="filter-group" style="display: flex; align-items: flex-end;">
+                <button class="btn" onclick="applyFilters()">Apply Filters</button>
+            </div>
+            <div class="filter-group" style="display: flex; align-items: flex-end;">
+                <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+            </div>
+            <div class="filter-group" style="display: flex; align-items: flex-end;">
+                <button class="btn btn-secondary" onclick="showAllLocations()">Show All Locations</button>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">Total Rotations:</span>
+                <span class="stat-value" id="totalRotations">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Displayed:</span>
+                <span class="stat-value" id="displayedRotations">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Avg Rating:</span>
+                <span class="stat-value" id="avgRating">0.0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Locations:</span>
+                <span class="stat-value" id="locationsCount">0</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="london-controls">
+                    <label>
+                        <input type="checkbox" id="showBoroughs" onchange="toggleBoroughs()">
+                        Show London Boroughs
+                    </label>
+                    <label>
+                        <input type="checkbox" id="showHospitals" onchange="toggleHospitals()" checked>
+                        Show Hospitals
+                    </label>
+                </div>
+                <div class="commute-info" id="commuteInfo">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="margin: 0;">Rotation Details</h3>
+                        <button onclick="clearSelection()" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75em; cursor: pointer;">Clear</button>
+                    </div>
+                    <div id="commuteDetails"></div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h2 id="sidebarTitle">All Rotations</h2>
+                </div>
+                <div class="rotation-list" id="rotationList">
+                    <div class="no-results">Select filters to find rotations</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let markersLayer;
+        let boroughsLayer;
+        let hospitalsLayer;
+        let hospitalMarkersLayer;
+        let rotationCircle = null;
+        let hospitalConnections = null; // Lines connecting hospitals
+        let allRotations = [];
+        let filteredRotations = [];
+        let selectedRotation = null;
+        let londonBoroughs = null;
+        let hospitalsData = [];
+        let hospitalMarkersByName = {}; // Map hospital names to their markers for hover functionality
+
+        // Initialize map
+        function initMap() {
+            map = L.map('map').setView([54.5, -2.5], 6);
+            
+            // Use a simple, plain map style - minimal colors, clean and uncluttered
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            console.log('🗺️ Map initialized with simple, plain CartoDB Positron (no labels) style');
+
+            // Add city labels
+            const cities = [
+                { name: 'London', lat: 51.5074, lon: -0.1278 },
+                { name: 'Birmingham', lat: 52.4862, lon: -1.8904 },
+                { name: 'Manchester', lat: 53.4808, lon: -2.2426 },
+                { name: 'Liverpool', lat: 53.4084, lon: -2.9916 },
+                { name: 'York', lat: 53.9591, lon: -1.0815 },
+                { name: 'Newcastle', lat: 54.9783, lon: -1.6178 },
+                { name: 'Bristol', lat: 51.4545, lon: -2.5879 },
+                { name: 'Nottingham', lat: 52.9548, lon: -1.1581 },
+                { name: 'Cambridge', lat: 52.2053, lon: 0.1218 },
+                { name: 'Oxford', lat: 51.7520, lon: -1.2577 },
+                { name: 'Southampton', lat: 50.9097, lon: -1.4044 },
+                { name: 'Brighton', lat: 50.8225, lon: -0.1372 },
+                { name: 'Exeter', lat: 50.7184, lon: -3.5339 },
+                { name: 'Portsmouth', lat: 50.8198, lon: -1.0880 },
+                { name: 'Preston', lat: 53.7632, lon: -2.7031 },
+                { name: 'Maidstone', lat: 51.2704, lon: 0.5227 }
+            ];
+
+            cities.forEach(city => {
+                L.marker([city.lat, city.lon], {
+                    icon: L.divIcon({
+                        className: 'city-label',
+                        html: `<div style="
+                            font-size: 12px;
+                            font-weight: 600;
+                            color: #4c1d95;
+                            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
+                            white-space: nowrap;
+                            pointer-events: none;
+                        ">${city.name}</div>`,
+                        iconSize: [0, 0],
+                        iconAnchor: [0, 0]
+                    })
+                }).addTo(map);
+            });
+
+            // Add Marta's place with special marker - Anchor Terrace, 125 Park St, London SE1 9EW
+            const martaMarker = L.marker([51.5058, -0.0942], {  // Southwark, near Borough Market
+                icon: L.divIcon({
+                    className: 'marta-marker',
+                    html: `<div style="
+                        color: #ec4899;
+                        font-weight: 700;
+                        font-size: 12px;
+                        text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
+                        white-space: nowrap;
+                    ">📍 Marta's place</div>`,
+                    iconSize: [0, 0],
+                    iconAnchor: [0, 0]
+                })
+            }).addTo(map);
+
+            martaMarker.bindPopup(`
+                <div style="text-align: center; font-family: 'Segoe UI', sans-serif;">
+                    <div style="font-weight: 700; font-size: 14px; color: #ec4899; margin-bottom: 8px;">
+                        📍 Marta's place
+                    </div>
+                    <div style="font-size: 11px; color: #6b7280; margin-bottom: 10px; line-height: 1.4;">
+                        Anchor Terrace<br>
+                        125 Park St<br>
+                        London SE1 9EW
+                    </div>
+                    <a href="https://maps.app.goo.gl/bCRAaZH9q6n4aKG3k" target="_blank" 
+                       style="
+                        display: inline-block;
+                        background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+                        color: white;
+                        padding: 8px 16px;
+                        border-radius: 6px;
+                        text-decoration: none;
+                        font-weight: 600;
+                        font-size: 12px;
+                        margin-top: 5px;
+                    ">
+                        Open in Google Maps
+                    </a>
+                </div>
+            `, {
+                closeButton: true,
+                maxWidth: 220
+            });
+
+            console.log('🏙️ City labels added to map');
+            console.log('📍 Marta\'s place marker added');
+
+            // Add London landmarks for orientation
+            const londonLandmarks = [
+                { name: 'Borough Market', lat: 51.5055, lon: -0.0910, emoji: '🏪' },
+                { name: 'Liverpool Street', lat: 51.5178, lon: -0.0823, emoji: '🚉' },
+                { name: 'Barbican', lat: 51.5200, lon: -0.0933, emoji: '🏛️' }
+            ];
+
+            londonLandmarks.forEach(landmark => {
+                const landmarkMarker = L.marker([landmark.lat, landmark.lon], {
+                    icon: L.divIcon({
+                        className: 'landmark-marker',
+                        html: `<div style="
+                            color: #6b21a8;
+                            font-weight: 700;
+                            font-size: 11px;
+                            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
+                            white-space: nowrap;
+                            pointer-events: none;
+                        ">${landmark.emoji} ${landmark.name}</div>`,
+                        iconSize: [0, 0],
+                        iconAnchor: [0, 0]
+                    })
+                }).addTo(map);
+
+                landmarkMarker.bindPopup(`
+                    <div style="text-align: center; font-family: 'Segoe UI', sans-serif;">
+                        <div style="font-weight: 700; font-size: 13px; color: #6b21a8; margin-bottom: 4px;">
+                            ${landmark.emoji} ${landmark.name}
+                        </div>
+                        <div style="font-size: 11px; color: #6b7280;">
+                            London Landmark
+                        </div>
+                    </div>
+                `, {
+                    closeButton: true,
+                    maxWidth: 150
+                });
+            });
+
+            console.log('🏛️ London landmarks added (Borough Market, Liverpool Street, Barbican)');
+
+            markersLayer = L.markerClusterGroup({
+                chunkedLoading: true,
+                spiderfyOnMaxZoom: true,
+                showCoverageOnHover: false,
+                zoomToBoundsOnClick: true,
+                iconCreateFunction: function(cluster) {
+                    const count = cluster.getChildCount();
+                    let size = 'small';
+                    if (count > 10) size = 'medium';
+                    if (count > 50) size = 'large';
+                    
+                    return L.divIcon({
+                        html: `<div style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); 
+                                color: white; border-radius: 50%; width: 40px; height: 40px; 
+                                display: flex; align-items: center; justify-content: center; 
+                                font-weight: 700; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);">
+                                ${count}</div>`,
+                        className: 'custom-cluster-icon',
+                        iconSize: L.point(40, 40)
+                    });
+                }
+            });
+
+            boroughsLayer = L.layerGroup().addTo(map); // On by default
+            hospitalsLayer = L.layerGroup().addTo(map);
+            hospitalMarkersLayer = L.layerGroup();
+
+            // Set borough toggle to checked by default
+            document.getElementById('showBoroughs').checked = true;
+
+            // Add click handler to map to clear selection when clicking on empty areas
+            map.on('click', function(e) {
+                // Only clear if click was directly on the map (not on a marker/popup)
+                if (e.originalEvent.target.classList.contains('leaflet-container') ||
+                    e.originalEvent.target.classList.contains('leaflet-tile') ||
+                    e.originalEvent.target.classList.contains('leaflet-tile-pane') ||
+                    e.originalEvent.target.tagName === 'IMG') {
+                    clearSelection();
+                    console.log('🗺️ Map clicked - selection cleared');
+                }
+            });
+
+            loadData();
+        }
+
+        // Load all data
+        async function loadData() {
+            try {
+                // Get the base path for API calls
+                const basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
+                const apiBase = basePath.endsWith('/rotations') ? basePath.replace('/rotations', '') : basePath;
+                
+                console.log('Loading from:', `${apiBase}/api/rotations`);
+                
+                const response = await fetch(`${apiBase}/api/rotations`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const allData = await response.json();
+                
+                // Filter out rotations with 0 places available
+                allRotations = allData.filter(r => r.places_available > 0);
+                
+                console.log(`Loaded ${allRotations.length} rotations (filtered ${allData.length - allRotations.length} with 0 places)`);
+                
+                // Load hospitals data and filter out generic placeholders
+                try {
+                    const hospitalsResponse = await fetch(`${apiBase}/api/hospitals_extended`);
+                    if (hospitalsResponse.ok) {
+                        const allHospitals = await hospitalsResponse.json();
+                        
+                        // Filter out generic/placeholder hospitals
+                        hospitalsData = allHospitals.filter(h => {
+                            const name = h.hospital_name.toLowerCase();
+                            // Exclude entries with "multiple" or other generic patterns
+                            return !name.includes('multiple') && 
+                                   !name.includes('various') &&
+                                   !name.includes('several') &&
+                                   name !== 'tbc' &&
+                                   name !== 'tba';
+                        });
+                        
+                        console.log(`Loaded ${hospitalsData.length} hospitals (filtered ${allHospitals.length - hospitalsData.length} generic entries)`);
+                        if (allHospitals.length > hospitalsData.length) {
+                            console.log('Filtered out:', allHospitals
+                                .filter(h => !hospitalsData.includes(h))
+                                .map(h => h.hospital_name));
+                        }
+                    }
+                } catch (e) {
+                    console.log('Hospitals data not available:', e);
+                }
+                
+                populateFilters();
+                updateStats();
+                applyFilters();
+
+                // Try to load London boroughs
+                try {
+                    const boroughsResponse = await fetch(`${apiBase}/api/borough_polygons`);
+                    if (boroughsResponse.ok) {
+                        londonBoroughs = await boroughsResponse.json();
+                        console.log('London boroughs loaded successfully');
+                        displayBoroughs(); // Show boroughs by default
+                    }
+                } catch (e) {
+                    console.log('London boroughs data not available:', e);
+                }
+
+                document.getElementById('loading').style.display = 'none';
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').innerHTML = 
+                    `<div style="color: #dc2626; font-weight: 600;">Error loading data: ${error.message}</div>
+                     <div style="color: #6b7280; font-size: 0.9em; margin-top: 10px;">Please refresh the page</div>
+                     <div style="color: #6b7280; font-size: 0.8em; margin-top: 5px;">Debug: ${window.location.pathname}</div>`;
+            }
+        }
+
+        // Populate filter dropdowns
+        function populateFilters() {
+            const specialties = new Set();
+            const regions = new Set();
+            const locations = new Set();
+
+            allRotations.forEach(r => {
+                if (r.has_haematology) specialties.add('Haematology');
+                if (r.has_cardiology) specialties.add('Cardiology');
+                if (r.has_respiratory) specialties.add('Respiratory Medicine');
+                if (r.has_gastroenterology) specialties.add('Gastroenterology');
+                if (r.has_endocrinology) specialties.add('Endocrinology & Diabetes');
+                if (r.has_neurology) specialties.add('Neurology');
+                if (r.has_renal) specialties.add('Renal Medicine');
+                if (r.has_geriatric) specialties.add('Geriatric Medicine');
+                if (r.has_icu) specialties.add('Intensive Care Medicine');
+                
+                regions.add(r.region);
+                locations.add(r.location_name);
+            });
+
+            const sortedSpecialties = Array.from(specialties).sort();
+            populateSelect('specialtyFilter', sortedSpecialties);
+            populateSelect('regionFilter', Array.from(regions).sort());
+            populateSelect('locationFilter', Array.from(locations).sort());
+            
+            // Populate exclusion filter (without "All" option)
+            const excludeSelect = document.getElementById('excludeSpecialtiesFilter');
+            excludeSelect.innerHTML = '';
+            sortedSpecialties.forEach(spec => {
+                const option = document.createElement('option');
+                option.value = spec;
+                option.textContent = spec;
+                excludeSelect.appendChild(option);
+            });
+            
+            // Set Haematology and London as default filters
+            document.getElementById('specialtyFilter').value = 'Haematology';
+            document.getElementById('regionFilter').value = 'London';
+        }
+
+        function populateSelect(id, options) {
+            const select = document.getElementById(id);
+            const firstOption = select.querySelector('option').cloneNode(true);
+            select.innerHTML = '';
+            select.appendChild(firstOption);
+            
+            options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                select.appendChild(option);
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const specialty = document.getElementById('specialtyFilter').value;
+            const region = document.getElementById('regionFilter').value;
+            const location = document.getElementById('locationFilter').value;
+            const minRating = parseFloat(document.getElementById('ratingFilter').value) || 0;
+            
+            // Get excluded specializations
+            const excludeSelect = document.getElementById('excludeSpecialtiesFilter');
+            const excludedSpecialties = Array.from(excludeSelect.selectedOptions).map(opt => opt.value);
+
+            const specialtyMap = {
+                'Haematology': 'has_haematology',
+                'Cardiology': 'has_cardiology',
+                'Respiratory Medicine': 'has_respiratory',
+                'Gastroenterology': 'has_gastroenterology',
+                'Endocrinology & Diabetes': 'has_endocrinology',
+                'Neurology': 'has_neurology',
+                'Renal Medicine': 'has_renal',
+                'Geriatric Medicine': 'has_geriatric',
+                'Intensive Care Medicine': 'has_icu'
+            };
+
+            filteredRotations = allRotations.filter(r => {
+                // Check positive filter (must have this specialty)
+                let matchesSpecialty = !specialty;
+                if (specialty) {
+                    matchesSpecialty = r[specialtyMap[specialty]];
+                }
+                
+                // Check exclusions (must NOT have these specialties)
+                let notExcluded = true;
+                if (excludedSpecialties.length > 0) {
+                    notExcluded = !excludedSpecialties.some(excSpec => r[specialtyMap[excSpec]]);
+                }
+
+                const matchesRegion = !region || r.region === region;
+                const matchesLocation = !location || r.location_name === location;
+                const matchesRating = r.google_rating >= minRating;
+
+                return matchesSpecialty && notExcluded && matchesRegion && matchesLocation && matchesRating;
+            });
+
+            updateMap();
+            updateSidebar();
+            updateStats();
+        }
+
+        function resetFilters() {
+            // Clear any selected rotation
+            clearSelection();
+            
+            // Reset filters to defaults
+            document.getElementById('specialtyFilter').value = 'Haematology'; // Reset to default Haematology
+            document.getElementById('regionFilter').value = 'London'; // Reset to default London
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+            document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1; // Clear all selections
+            applyFilters();
+        }
+
+        function showAllLocations() {
+            // Clear all filters to show all rotations
+            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('regionFilter').value = '';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+            document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1; // Clear all selections
+            applyFilters();
+            
+            // Zoom out to show all of UK
+            map.setView([54.5, -2.5], 6);
+            
+            console.log('🌍 Showing all locations across UK');
+        }
+
+        // Update map markers
+        function updateMap() {
+            markersLayer.clearLayers();
+
+            filteredRotations.forEach(rotation => {
+                if (rotation.lat && rotation.lon) {
+                    const specialties = getSpecialties(rotation);
+                    
+                    const marker = L.marker([rotation.lat, rotation.lon], {
+                        icon: L.divIcon({
+                            html: `<div style="background: ${rotation.has_haematology ? '#7c3aed' : '#a855f7'}; 
+                                    color: white; border-radius: 50%; width: 12px; height: 12px; 
+                                    border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                            iconSize: [12, 12],
+                            className: 'custom-marker'
+                        })
+                    });
+
+                    marker.bindPopup(`
+                        <div class="popup-content">
+                            <div class="popup-title">${rotation.preference || rotation.programme_name}</div>
+                            <div class="popup-detail"><strong>Location:</strong> ${rotation.location_name}</div>
+                            <div class="popup-detail"><strong>Region:</strong> ${rotation.region}</div>
+                            <div class="popup-detail"><strong>Rating:</strong> ⭐ ${rotation.google_rating.toFixed(1)}</div>
+                            <div class="popup-detail"><strong>Duration:</strong> ${rotation.duration_months} months</div>
+                            <div class="popup-detail"><strong>Places:</strong> ${rotation.places_available}</div>
+                            <div class="popup-specialties">
+                                ${specialties.map(s => `<span class="spec-badge">${s}</span>`).join('')}
+                            </div>
+                        </div>
+                    `);
+
+                    marker.on('click', () => {
+                        selectedRotation = rotation;
+                        updateSidebar();
+                        showCommuteInfo(rotation);
+                        showHospitalLocations(rotation);
+                    });
+
+                    markersLayer.addLayer(marker);
+                }
+            });
+
+            map.addLayer(markersLayer);
+
+            // Fit bounds if we have markers
+            if (filteredRotations.length > 0 && markersLayer.getBounds().isValid()) {
+                map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
+            }
+        }
+
+        // Update sidebar with rotations list
+        function updateSidebar() {
+            const listContainer = document.getElementById('rotationList');
+            const titleElement = document.getElementById('sidebarTitle');
+
+            titleElement.textContent = `${filteredRotations.length} Rotation${filteredRotations.length !== 1 ? 's' : ''}`;
+
+            if (filteredRotations.length === 0) {
+                listContainer.innerHTML = '<div class="no-results">No rotations match your filters</div>';
+                return;
+            }
+
+            listContainer.innerHTML = filteredRotations.map(rotation => {
+                const specialties = getSpecialties(rotation);
+                const isSelected = selectedRotation && selectedRotation.id === rotation.id;
+
+                return `
+                    <div class="rotation-card ${isSelected ? 'selected' : ''}" onclick="selectRotation(${rotation.id})">
+                        <div class="rotation-name">${rotation.preference || rotation.programme_name}</div>
+                        <div class="rotation-details">
+                            <div class="rotation-detail-row">
+                                <span class="detail-label">📍 Location:</span> ${rotation.location_name}
+                            </div>
+                            <div class="rotation-detail-row">
+                                <span class="detail-label">🗺️ Region:</span> ${rotation.region}
+                            </div>
+                            <div class="rotation-detail-row">
+                                <span class="rating-badge">⭐ ${rotation.google_rating.toFixed(1)}</span>
+                                <span style="margin-left: 8px; color: #64748b;">📅 ${rotation.duration_months}mo • 👥 ${rotation.places_available} ${rotation.places_available !== 1 ? 'places' : 'place'}</span>
+                            </div>
+                            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
+                                ${specialties.map(s => `<span class="spec-badge">${s}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectRotation(rotationId) {
+            console.log('\n🎯 ========== ROTATION SELECTED ==========');
+            console.log('🔑 Rotation ID:', rotationId);
+            
+            const rotation = allRotations.find(r => r.id === rotationId);
+            if (rotation && rotation.lat && rotation.lon) {
+                console.log('📌 Rotation:', rotation.preference);
+                console.log('📍 Location:', rotation.location_name);
+                console.log('🏥 Hospitals:', rotation.hospitals);
+                console.log('💼 Places Available:', rotation.places_available);
+                console.log('⭐ Rating:', rotation.google_rating);
+                
+                selectedRotation = rotation;
+                // Don't auto-zoom when clicking rotation - keep current map view
+                // map.setView([rotation.lat, rotation.lon], 13);
+                updateSidebar();
+                showCommuteInfo(rotation);
+                showHospitalLocations(rotation);
+                
+                console.log('✅ Rotation selection complete\n');
+            } else {
+                console.error('❌ Rotation not found or missing coordinates:', rotationId);
+            }
+        }
+
+        // Extract and show hospital locations for a rotation
+        function showHospitalLocations(rotation) {
+            console.log('🏥 ========== SHOWING HOSPITAL LOCATIONS ==========');
+            console.log('📋 Rotation:', rotation.preference);
+            console.log('📍 Rotation Location:', rotation.location_name, `(${rotation.lat}, ${rotation.lon})`);
+            console.log('🗺️ Region:', rotation.region, '/', rotation.area);
+            
+            // Hide general hospital markers (only show rotation-specific ones)
+            if (map.hasLayer(markersLayer)) {
+                map.removeLayer(markersLayer);
+                console.log('👻 Hidden general hospital markers');
+            }
+            
+            // Clear previous hospital markers, connections, and circle
+            hospitalMarkersLayer.clearLayers();
+            hospitalMarkersByName = {}; // Clear hospital marker references
+            map.removeLayer(hospitalMarkersLayer);
+            
+            if (hospitalConnections) {
+                map.removeLayer(hospitalConnections);
+                hospitalConnections = null;
+            }
+            
+            if (rotationCircle) {
+                map.removeLayer(rotationCircle);
+                rotationCircle = null;
+            }
+            console.log('🧹 Cleared previous hospital markers, connections, and circle');
+            
+            // Extract hospital names from description
+            const hospitalNames = extractHospitalNames(rotation.description, rotation.area);
+            
+            console.log(`🔍 Found ${hospitalNames.length} hospitals in rotation:`, hospitalNames);
+            
+            const foundHospitals = [];
+            const foundHospitalIds = new Set(); // Track to avoid duplicates
+            
+            if (hospitalNames.length === 0) {
+                console.log('⚠️ No hospitals extracted from description, trying location match...');
+                // If no specific hospitals found, try to match with location
+                const locationHospitals = hospitalsData.filter(h => 
+                    h.name === rotation.location_name || 
+                    h.hospital_name.toLowerCase() === rotation.location_name.toLowerCase()
+                );
+                
+                console.log(`📍 Found ${locationHospitals.length} hospitals matching exact location:`, 
+                    locationHospitals.map(h => h.hospital_name));
+                
+                locationHospitals.forEach((hospital, index) => {
+                    if (!foundHospitalIds.has(hospital.hospital_name)) {
+                        console.log(`  ${index === 0 ? '⭐' : '•'} Adding hospital: ${hospital.hospital_name} (${hospital.lat}, ${hospital.lon})`);
+                        addHospitalMarker(hospital, rotation, index === 0); // First one is main
+                        foundHospitals.push(hospital);
+                        foundHospitalIds.add(hospital.hospital_name);
+                    }
+                });
+            } else {
+                console.log('🔎 Matching extracted names with hospital database...');
+                // Match extracted names with hospital data
+                // ONLY show hospitals that match the extracted names
+                hospitalNames.forEach((hospName, index) => {
+                    console.log(`  Searching for: "${hospName}"`);
+                    
+                    // More strict matching with prioritization
+                    const hospLower = hospName.toLowerCase().replace(/\s+/g, ' ').trim();
+                    
+                    // First try exact matches
+                    let matchedHospitals = hospitalsData.filter(h => {
+                        const hNameLower = h.hospital_name.toLowerCase().replace(/\s+/g, ' ').trim();
+                        return hNameLower === hospLower;
+                    });
+                    
+                    // If no exact match, try substring matches
+                    if (matchedHospitals.length === 0) {
+                        matchedHospitals = hospitalsData.filter(h => {
+                            const hNameLower = h.hospital_name.toLowerCase().replace(/\s+/g, ' ').trim();
+                            return hNameLower.includes(hospLower) || hospLower.includes(hNameLower);
+                        });
+                    }
+                    
+                    // If still no match, try word-based matching
+                    if (matchedHospitals.length === 0) {
+                        const commonWords = ['hospital', 'trust', 'foundation', 'royal', 'general', 'university', 'college', 'nhs', 'the', 'and'];
+                        const extractedWords = hospLower.split(' ').filter(w => 
+                            w.length > 3 && !commonWords.includes(w)
+                        );
+                        
+                        if (extractedWords.length > 0) {
+                            matchedHospitals = hospitalsData.filter(h => {
+                                const hNameLower = h.hospital_name.toLowerCase().replace(/\s+/g, ' ').trim();
+                                const hospitalWords = hNameLower.split(' ').filter(w => 
+                                    w.length > 3 && !commonWords.includes(w)
+                                );
+                                
+                                if (hospitalWords.length === 0) return false;
+                                
+                                // Calculate how many extracted words match hospital words
+                                const matchCount = extractedWords.filter(word => 
+                                    hospitalWords.some(hw => hw === word || hw.includes(word) || word.includes(hw))
+                                ).length;
+                                
+                                // Require at least 60% of extracted words to match
+                                const matchRatio = matchCount / extractedWords.length;
+                                return matchRatio >= 0.6;
+                            });
+                            
+                            // Sort by best match ratio (highest first)
+                            matchedHospitals.sort((a, b) => {
+                                const aWords = a.hospital_name.toLowerCase().split(' ').filter(w => 
+                                    w.length > 3 && !commonWords.includes(w)
+                                );
+                                const bWords = b.hospital_name.toLowerCase().split(' ').filter(w => 
+                                    w.length > 3 && !commonWords.includes(w)
+                                );
+                                
+                                const aRatio = extractedWords.filter(word => 
+                                    aWords.some(hw => hw === word || hw.includes(word) || word.includes(hw))
+                                ).length / extractedWords.length;
+                                
+                                const bRatio = extractedWords.filter(word => 
+                                    bWords.some(hw => hw === word || hw.includes(word) || word.includes(hw))
+                                ).length / extractedWords.length;
+                                
+                                return bRatio - aRatio; // Higher ratio first
+                            });
+                        }
+                    }
+                    
+                    if (matchedHospitals.length > 0) {
+                        console.log(`    ✅ Matched ${matchedHospitals.length} hospital(s):`, 
+                            matchedHospitals.map(h => h.hospital_name));
+                        // Only add the first match for this extracted name
+                        const h = matchedHospitals[0];
+                        if (!foundHospitalIds.has(h.hospital_name)) {
+                            console.log(`      ${index === 0 ? '⭐' : '•'} Adding: ${h.hospital_name} at (${h.lat}, ${h.lon})`);
+                            addHospitalMarker(h, rotation, index === 0); // First one is main
+                            foundHospitals.push(h);
+                            foundHospitalIds.add(h.hospital_name);
+                        } else {
+                            console.log(`      ⏭️ Skipping duplicate: ${h.hospital_name}`);
+                        }
+                    } else {
+                        console.log(`    ❌ No match found for "${hospName}" in database`);
+                        console.log(`    💡 This hospital may not be in our database yet`);
+                    }
+                });
+            }
+            
+            console.log(`\n📊 Total unique hospitals added to map: ${foundHospitals.length}`);
+            
+            // If no hospitals found from extraction, try location-based matching
+            if (foundHospitals.length === 0) {
+                console.log('⚠️ No hospitals found from description extraction');
+                console.log('🔍 Attempting location-based matching...');
+                console.log(`📍 Rotation location: "${rotation.location_name}" in ${rotation.area}`);
+                
+                // Try to match hospitals by location name, area, or trust name
+                const locationMatches = hospitalsData.filter(h => {
+                    const locationLower = rotation.location_name?.toLowerCase() || '';
+                    const areaLower = rotation.area?.toLowerCase() || '';
+                    const hNameLower = h.name?.toLowerCase() || '';
+                    const hSubRegionLower = h.sub_region?.toLowerCase() || '';
+                    const hHospitalNameLower = h.hospital_name?.toLowerCase() || '';
+                    const hRegionLower = h.region?.toLowerCase() || '';
+                    
+                    // Check if location name matches hospital location or hospital name contains location
+                    const matchesLocation = (locationLower.length > 3 && (
+                        hNameLower.includes(locationLower) || 
+                        locationLower.includes(hNameLower) ||
+                        hHospitalNameLower.includes(locationLower)
+                    ));
+                    
+                    // Check if area/trust name matches
+                    const matchesArea = (areaLower.length > 3 && (
+                        hNameLower.includes(areaLower) || 
+                        areaLower.includes(hNameLower)
+                    ));
+                    
+                    // Check if sub_region matches
+                    const matchesSubRegion = (hSubRegionLower.length > 3 && 
+                        rotation.sub_region?.toLowerCase().includes(hSubRegionLower));
+                    
+                    return matchesLocation || matchesArea || matchesSubRegion;
+                });
+                
+                if (locationMatches.length > 0) {
+                    console.log(`✅ Found ${locationMatches.length} hospital(s) by location:`, 
+                        locationMatches.map(h => h.hospital_name));
+                    
+                    // Add up to 3 location matches (to avoid overwhelming the map)
+                    locationMatches.slice(0, 3).forEach((h, index) => {
+                        if (!foundHospitalIds.has(h.hospital_name)) {
+                            console.log(`  ${index === 0 ? '⭐' : '•'} Adding: ${h.hospital_name} at (${h.lat}, ${h.lon})`);
+                            addHospitalMarker(h, rotation, index === 0); // First one is main
+                            foundHospitals.push(h);
+                            foundHospitalIds.add(h.hospital_name);
+                        }
+                    });
+                } else {
+                    console.log('❌ No hospitals found by location match');
+                    console.log('💡 Extracted names:', hospitalNames);
+                    console.log('💡 These hospitals may need to be added to the database');
+                }
+            }
+            
+            if (foundHospitals.length === 0) {
+                console.log('⚠️ WARNING: No hospitals found for this rotation at all');
+            }
+            
+            // If we found hospital markers, add the layer and zoom to them
+            if (hospitalMarkersLayer.getLayers().length > 0) {
+                map.addLayer(hospitalMarkersLayer);
+                console.log('✅ Hospital markers layer added to map');
+                
+                // Calculate proper rotation area circle
+                if (foundHospitals.length >= 2) {
+                    // Find bounding box of all hospitals
+                    const lats = foundHospitals.map(h => h.lat);
+                    const lons = foundHospitals.map(h => h.lon);
+                    const minLat = Math.min(...lats);
+                    const maxLat = Math.max(...lats);
+                    const minLon = Math.min(...lons);
+                    const maxLon = Math.max(...lons);
+                    
+                    // Center is the center of the bounding box
+                    const centerLat = (minLat + maxLat) / 2;
+                    const centerLon = (minLon + maxLon) / 2;
+                    
+                    console.log(`📐 Bounding box calculated:`);
+                    console.log(`   Lat: ${minLat.toFixed(4)} to ${maxLat.toFixed(4)}`);
+                    console.log(`   Lon: ${minLon.toFixed(4)} to ${maxLon.toFixed(4)}`);
+                    console.log(`   Center: (${centerLat.toFixed(4)}, ${centerLon.toFixed(4)})`);
+                    
+                    // Calculate radius as distance from center to furthest corner
+                    const distances = foundHospitals.map(h => {
+                        // Haversine-like approximation for distance in meters
+                        const R = 6371000; // Earth's radius in meters
+                        const dLat = (h.lat - centerLat) * Math.PI / 180;
+                        const dLon = (h.lon - centerLon) * Math.PI / 180;
+                        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                                Math.cos(centerLat * Math.PI / 180) * Math.cos(h.lat * Math.PI / 180) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2);
+                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                        return R * c;
+                    });
+                    const maxDistance = Math.max(...distances);
+                    
+                    console.log(`📏 Maximum distance from center: ${(maxDistance / 1000).toFixed(2)} km`);
+                    
+                    // Add circle showing the rotation area
+                    // For single hospital: add 2.5km radius to show area
+                    // For multiple hospitals: tight fit around them
+                    let circleRadius;
+                    if (foundHospitals.length === 1) {
+                        // Single hospital: show 2.5km radius circle
+                        circleRadius = 2500; // 2.5km radius
+                        console.log(`⚪ Single hospital - showing 2.5km radius circle`);
+                    } else if (maxDistance > 1000 && maxDistance < 50000) {
+                        // Multiple hospitals between 1-50km apart: tight fit
+                        circleRadius = maxDistance + 1000; // Add just 1km buffer
+                        console.log(`⚪ Multiple hospitals - tight fit with 1km buffer`);
+                    }
+                    
+                    if (circleRadius) {
+                        rotationCircle = L.circle([centerLat, centerLon], {
+                            radius: circleRadius,
+                            color: '#9333ea',
+                            fillColor: '#f3e8ff',
+                            fillOpacity: 0.08,
+                            weight: 2,
+                            opacity: 0.5,
+                            dashArray: '8, 12'
+                        }).addTo(map);
+                        
+                        const bufferKm = foundHospitals.length === 1 ? '2.5' : '1.0';
+                        rotationCircle.bindPopup(`
+                            <div class="popup-content">
+                                <div class="popup-title">Rotation Coverage Area</div>
+                                <div class="popup-detail"><strong>Hospitals:</strong> ${foundHospitals.length}</div>
+                                <div class="popup-detail"><strong>Radius:</strong> ${(circleRadius / 1000).toFixed(1)} km</div>
+                                <div class="popup-detail"><strong>Buffer:</strong> ±${bufferKm} km</div>
+                                <div style="margin-top: 8px; font-size: 0.85em; color: #64748b;">
+                                    ${foundHospitals.length === 1 ? 'Area around hospital location' : 'Tight coverage around found hospital locations'}
+                                </div>
+                            </div>
+                        `);
+                        
+                        const logBuffer = foundHospitals.length === 1 ? '2.5km' : '1km';
+                        console.log(`⭕ Rotation circle added with radius: ${(circleRadius / 1000).toFixed(2)} km (${logBuffer} buffer)`);
+                    } else if (maxDistance <= 1000) {
+                        console.log('⚪ Circle not shown (hospitals within 1km of each other)');
+                    } else {
+                        console.log(`⚪ Circle not shown (hospitals too far apart: ${(maxDistance / 1000).toFixed(1)} km - may span multiple regions)`);
+                    }
+                } else if (foundHospitals.length === 1) {
+                    // This case is now handled above
+                    console.log('⚪ Note: Single hospital case handled with 2.5km circle');
+                }
+                
+                // Draw lines connecting main hospital to all other hospitals (star pattern)
+                if (foundHospitals.length >= 2) {
+                    const mainHospital = foundHospitals[0]; // First hospital is main
+                    const mainCoord = [mainHospital.lat, mainHospital.lon];
+                    
+                    hospitalConnections = L.layerGroup();
+                    
+                    // Connect main hospital to each other hospital
+                    for (let i = 1; i < foundHospitals.length; i++) {
+                        const otherHospital = foundHospitals[i];
+                        const otherCoord = [otherHospital.lat, otherHospital.lon];
+                        
+                        // Calculate distance between hospitals using Haversine formula
+                        const R = 6371000; // Earth's radius in meters
+                        const dLat = (otherHospital.lat - mainHospital.lat) * Math.PI / 180;
+                        const dLon = (otherHospital.lon - mainHospital.lon) * Math.PI / 180;
+                        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                                Math.cos(mainHospital.lat * Math.PI / 180) * Math.cos(otherHospital.lat * Math.PI / 180) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2);
+                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                        const distance = R * c; // Distance in meters
+                        const distanceKm = (distance / 1000).toFixed(1);
+                        
+                        const polyline = L.polyline([mainCoord, otherCoord], {
+                            color: '#9333ea',
+                            weight: 3,
+                            opacity: 0.6,
+                            dashArray: '10, 10'
+                        }).bindTooltip(`${distanceKm} km`, {
+                            permanent: true,
+                            direction: 'center',
+                            className: 'distance-label',
+                            offset: [0, 0]
+                        });
+                        
+                        hospitalConnections.addLayer(polyline);
+                    }
+                    
+                    map.addLayer(hospitalConnections);
+                    console.log(`🔗 Connected main hospital to ${foundHospitals.length - 1} other hospital(s) in star pattern with distances`);
+                }
+                
+                // Zoom to show rotation location + hospitals + circle (if exists)
+                const bounds = L.latLngBounds();
+                
+                // Add all hospital markers to bounds
+                foundHospitals.forEach(h => {
+                    bounds.extend([h.lat, h.lon]);
+                });
+                
+                // Add rotation location
+                bounds.extend([rotation.lat, rotation.lon]);
+                
+                // If there's a circle, extend bounds to include all corners of the circle
+                if (rotationCircle) {
+                    const circleBounds = rotationCircle.getBounds();
+                    bounds.extend(circleBounds.getNorthEast());
+                    bounds.extend(circleBounds.getSouthWest());
+                    bounds.extend(circleBounds.getNorthWest());
+                    bounds.extend(circleBounds.getSouthEast());
+                    console.log('📐 Extended bounds to include full rotation circle (all corners)');
+                }
+                
+                // Don't auto-zoom when showing hospitals - keep current map view
+                // Fit map to show everything with good padding
+                // Use setTimeout to ensure all layers are rendered before zooming
+                // setTimeout(() => {
+                //     map.fitBounds(bounds, { 
+                //         padding: [100, 100],
+                //         maxZoom: 11  // Don't zoom in too close
+                //     });
+                //     console.log('🔍 Map zoomed to show rotation + hospitals + complete circle');
+                // }, 100); // Small delay to ensure rendering is complete
+                console.log('🔍 Hospitals displayed at current zoom level (no auto-zoom)');
+            } else {
+                console.log('⚠️ No hospital markers to display - hospitals not in database');
+            }
+            
+            console.log('🏥 ========== HOSPITAL DISPLAY COMPLETE ==========\n');
+        }
+
+        // Extract hospital names from rotation description
+        function extractHospitalNames(description, area) {
+            const hospitals = new Set();
+            
+            // Map NHS Trust names to their actual hospitals
+            const trustToHospitalMap = {
+                'Royal Free London NHS Foundation Trust': ['Royal Free Hospital'],
+                'Imperial College Healthcare NHS Trust': ['Charing Cross Hospital', 'Hammersmith Hospital', 'St Mary\'s Hospital'],
+                'London North West University Healthcare NHS Trust': ['Northwick Park Hospital', 'Ealing Hospital'],
+                'University College London Hospitals NHS Foundation Trust': ['University College Hospital'],
+                'Guy\'s and St Thomas\' NHS Foundation Trust': ['Guy\'s Hospital', 'St Thomas\' Hospital'],
+                'King\'s College Hospital NHS Foundation Trust': ['King\'s College Hospital'],
+                'Barts Health NHS Trust': ['The Royal London Hospital', 'St Bartholomew\'s Hospital', 'Whipps Cross Hospital'],
+                'Lewisham and Greenwich NHS Trust': ['Lewisham Hospital', 'Queen Elizabeth Hospital'],
+                'Epsom and St Helier University Hospitals NHS Trust': ['Epsom Hospital', 'St Helier Hospital'],
+                'Barking, Havering and Redbridge University Hospitals NHS Trust': ['Queen\'s Hospital', 'King George Hospital'],
+                'Buckinghamshire Healthcare NHS Trust': ['Stoke Mandeville Hospital']
+            };
+            
+            // Check for NHS Trust names and add their hospitals
+            for (const [trustName, hospitalList] of Object.entries(trustToHospitalMap)) {
+                if (description.includes(trustName)) {
+                    hospitalList.forEach(h => hospitals.add(h));
+                }
+            }
+            
+            // Specific hospital patterns - only match actual hospital names
+            const hospitalPatterns = [
+                /([A-Z][a-zA-Z\s&']+Hospital)/g,
+                /([A-Z][a-zA-Z\s]+Infirmary)/g,
+                /(Royal [A-Z][a-zA-Z\s]+Hospital)/g,
+                /(St\.?\s+[A-Z][a-zA-Z\s']+Hospital)/gi,
+                /(The [A-Z][a-zA-Z\s]+Hospital)/g
+            ];
+            
+            // Extract from description
+            hospitalPatterns.forEach(pattern => {
+                const matches = description.matchAll(pattern);
+                for (const match of matches) {
+                    let name = match[1].trim();
+                    
+                    // Clean up the name
+                    name = name.replace(/\s+/g, ' '); // Remove extra spaces
+                    
+                    // Skip if it contains NHS Trust organization text
+                    if (/NHS Trust|Foundation Trust|Healthcare NHS|University Healthcare/i.test(name)) continue;
+                    
+                    // Skip if too short or contains other unwanted text
+                    if (name.length < 5) continue;
+                    if (/Acute|internal|Medicine|Training|Programme/i.test(name)) continue;
+                    
+                    hospitals.add(name);
+                }
+            });
+            
+            // Remove duplicates and subsets (e.g., if we have both "Park Hospital" and "Northwick Park Hospital", keep the longer one)
+            const hospitalArray = Array.from(hospitals);
+            const filtered = hospitalArray.filter((name, index) => {
+                // Check if this name is a substring of any other name
+                const isSubset = hospitalArray.some((other, otherIndex) => 
+                    otherIndex !== index && other.includes(name) && other.length > name.length
+                );
+                return !isSubset;
+            });
+            
+            return filtered;
+        }
+
+        // Add a hospital marker to the map
+        function addHospitalMarker(hospital, rotation, isMain = false) {
+            const size = isMain ? 28 : 18; // Main hospital is larger
+            const emoji = isMain ? '🏥' : '🏥';
+            const fontSize = isMain ? '16px' : '12px';
+            const zIndex = isMain ? 2000 : 1000;
+            
+            const marker = L.marker([hospital.lat, hospital.lon], {
+                icon: L.divIcon({
+                    html: `<div class="hospital-marker-icon" style="background: ${isMain ? '#dc2626' : '#ef4444'}; 
+                            color: white; border-radius: 50%; 
+                            width: ${size}px; height: ${size}px; 
+                            border: ${isMain ? '4px' : '3px'} solid white; 
+                            box-shadow: 0 ${isMain ? '3' : '2'}px ${isMain ? '8' : '6'}px rgba(220, 38, 38, ${isMain ? '0.6' : '0.4'});
+                            display: flex; align-items: center; justify-content: center;
+                            font-size: ${fontSize};
+                            transition: all 0.3s;">
+                            ${emoji}</div>`,
+                    iconSize: [size, size],
+                    className: 'hospital-marker',
+                    iconAnchor: [size/2, size/2]
+                }),
+                zIndexOffset: zIndex
+            });
+
+            marker.bindPopup(`
+                <div class="popup-content">
+                    <div class="popup-title">${isMain ? '🏥⭐ ' : '🏥 '}${hospital.hospital_name}${isMain ? ' (Main)' : ''}</div>
+                    <div class="popup-detail"><strong>Location:</strong> ${hospital.name}</div>
+                    <div class="popup-detail"><strong>Region:</strong> ${hospital.region}</div>
+                    <div class="popup-detail"><strong>Rating:</strong> ⭐ ${hospital.google_rating.toFixed(1)}</div>
+                    ${isMain ? '<div class="popup-detail" style="color: #dc2626; font-weight: 600;">Primary training site</div>' : ''}
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e9d5ff;">
+                        <div style="font-size: 0.85em; color: #6b21a8; font-weight: 600;">Part of rotation:</div>
+                        <div style="font-size: 0.85em; color: #64748b;">${rotation.preference}</div>
+                    </div>
+                </div>
+            `);
+
+            hospitalMarkersLayer.addLayer(marker);
+            
+            // Store marker by hospital name for hover functionality
+            hospitalMarkersByName[hospital.hospital_name] = marker;
+        }
+        
+        // Highlight hospital marker on map
+        function highlightHospitalMarker(hospitalName) {
+            const marker = hospitalMarkersByName[hospitalName];
+            if (marker) {
+                // Find the marker icon and add highlight effect
+                const markerElement = marker.getElement();
+                if (markerElement) {
+                    const icon = markerElement.querySelector('.hospital-marker-icon');
+                    if (icon) {
+                        icon.style.transform = 'scale(1.3)';
+                        icon.style.boxShadow = '0 4px 16px rgba(220, 38, 38, 0.8)';
+                        icon.style.border = '4px solid #fbbf24'; // Gold border
+                    }
+                }
+                // Open popup
+                marker.openPopup();
+            }
+        }
+        
+        // Remove highlight from hospital marker
+        function unhighlightHospitalMarker(hospitalName) {
+            const marker = hospitalMarkersByName[hospitalName];
+            if (marker) {
+                const markerElement = marker.getElement();
+                if (markerElement) {
+                    const icon = markerElement.querySelector('.hospital-marker-icon');
+                    if (icon) {
+                        icon.style.transform = 'scale(1)';
+                        icon.style.boxShadow = ''; // Reset to CSS default
+                        icon.style.border = ''; // Reset to CSS default
+                    }
+                }
+                // Close popup
+                marker.closePopup();
+            }
+        }
+
+        // Get specialties for a rotation
+        function getSpecialties(rotation) {
+            const specs = [];
+            if (rotation.has_haematology) specs.push('Haematology');
+            if (rotation.has_cardiology) specs.push('Cardiology');
+            if (rotation.has_respiratory) specs.push('Respiratory');
+            if (rotation.has_gastroenterology) specs.push('Gastroenterology');
+            if (rotation.has_endocrinology) specs.push('Endocrinology');
+            if (rotation.has_neurology) specs.push('Neurology');
+            if (rotation.has_renal) specs.push('Renal');
+            if (rotation.has_geriatric) specs.push('Geriatric');
+            if (rotation.has_icu) specs.push('ICU');
+            return specs;
+        }
+
+        // Show commute information
+        async function showCommuteInfo(rotation) {
+            const commuteInfoDiv = document.getElementById('commuteInfo');
+            const commuteDetailsDiv = document.getElementById('commuteDetails');
+
+            // Extract hospital names
+            const hospitalNames = extractHospitalNames(rotation.description, rotation.area);
+            const specialties = getSpecialties(rotation);
+            
+            let hospitalInfo = '';
+            if (rotation.hospitals && rotation.hospitals.length > 0) {
+                hospitalInfo = `
+                    <div class="commute-item">
+                        <div class="commute-mode">Hospitals in Programme</div>
+                        <div>${rotation.hospitals.join(', ')}</div>
+                    </div>
+                `;
+            }
+            
+            let extractedHospitals = '';
+            if (hospitalNames.length > 0) {
+                const hospitalBadges = hospitalNames.map(name => 
+                    `<span class="hospital-badge" 
+                           title="${name}" 
+                           onmouseover="highlightHospitalMarker('${name.replace(/'/g, "\\'")}')"
+                           onmouseout="unhighlightHospitalMarker('${name.replace(/'/g, "\\'")}')">${name}</span>`
+                ).join('');
+                extractedHospitals = `
+                    <div class="commute-item">
+                        <div class="commute-mode">Hospital Locations Found</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+                            ${hospitalBadges}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let specialtiesInfo = '';
+            if (specialties.length > 0) {
+                specialtiesInfo = `
+                    <div class="commute-item">
+                        <div class="commute-mode">Specializations</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;">
+                            ${specialties.map(s => `<span class="spec-badge">${s}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let descriptionInfo = '';
+            if (rotation.description && rotation.description.trim()) {
+                descriptionInfo = `
+                    <div class="commute-item">
+                        <div class="commute-mode">Description</div>
+                        <div style="font-size: 0.85em; line-height: 1.6; color: #475569; white-space: pre-wrap;">${rotation.description}</div>
+                    </div>
+                `;
+            }
+
+            commuteDetailsDiv.innerHTML = `
+                <div class="commute-item" style="background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border-left: 4px solid #9333ea;">
+                    <div class="commute-mode" style="color: #6b21a8; font-weight: 700; font-size: 0.95em;">${rotation.preference || rotation.programme_name}</div>
+                    <div style="font-size: 0.85em; color: #1f2937; margin-top: 6px;">
+                        <span class="rating-badge" style="background: #fbbf24; color: #78350f; border: 1px solid #f59e0b;">★ ${rotation.google_rating.toFixed(1)}</span>
+                        <span style="margin-left: 8px; color: #64748b;">6 months per rotation • ${rotation.places_available} ${rotation.places_available !== 1 ? 'places' : 'place'}</span>
+                    </div>
+                </div>
+                <div class="commute-item">
+                    <div class="commute-mode">Rotation Location</div>
+                    <div>${rotation.location_name}, ${rotation.region}</div>
+                </div>
+                ${specialtiesInfo}
+                ${hospitalInfo}
+                ${extractedHospitals}
+                ${descriptionInfo}
+                <div class="commute-item" style="font-size: 0.8em; color: #94a3b8; background: #f8fafc; border: 1px dashed #cbd5e1;">
+                    Red markers show hospital locations. Hover over hospital badges to highlight them on the map. Each rotation lasts 6 months.
+                </div>
+            `;
+
+            commuteInfoDiv.classList.add('show');
+        }
+
+        // Display borough boundaries
+        function displayBoroughs() {
+            if (!londonBoroughs) return;
+
+            boroughsLayer.clearLayers();
+
+            londonBoroughs.features.forEach(feature => {
+                const boroughName = feature.properties.name || 'London Borough';
+                const polygon = L.geoJSON(feature, {
+                    style: {
+                        fillColor: '#faf5ff',
+                        fillOpacity: 0.02,
+                        color: '#f3e8ff',
+                        weight: 1,
+                        opacity: 0.15
+                    }
+                }).bindPopup(`
+                    <div class="popup-content">
+                        <div class="popup-title">📍 ${boroughName}</div>
+                        <div style="font-size: 0.85em; color: #64748b; margin-top: 5px;">
+                            London Borough
+                        </div>
+                    </div>
+                `);
+
+                boroughsLayer.addLayer(polygon);
+            });
+        }
+
+        // Toggle London boroughs
+        function toggleBoroughs() {
+            const showBoroughs = document.getElementById('showBoroughs').checked;
+            
+            if (showBoroughs) {
+                if (londonBoroughs) {
+                    displayBoroughs();
+                }
+            } else {
+                boroughsLayer.clearLayers();
+            }
+        }
+
+        // Toggle hospitals
+        function toggleHospitals() {
+            const showHospitals = document.getElementById('showHospitals').checked;
+            
+            if (showHospitals) {
+                map.addLayer(markersLayer);
+            } else {
+                map.removeLayer(markersLayer);
+            }
+        }
+
+        // Clear selection and hospital markers
+        function clearSelection() {
+            selectedRotation = null;
+            hospitalMarkersLayer.clearLayers();
+            hospitalMarkersByName = {}; // Clear hospital marker references
+            map.removeLayer(hospitalMarkersLayer);
+            
+            if (hospitalConnections) {
+                map.removeLayer(hospitalConnections);
+                hospitalConnections = null;
+            }
+            
+            if (rotationCircle) {
+                map.removeLayer(rotationCircle);
+                rotationCircle = null;
+            }
+            document.getElementById('commuteInfo').classList.remove('show');
+            
+            // Restore general hospital markers if the checkbox is enabled
+            const showHospitals = document.getElementById('showHospitals').checked;
+            if (showHospitals && !map.hasLayer(markersLayer)) {
+                map.addLayer(markersLayer);
+                console.log('🔄 Restored general hospital markers');
+            }
+            
+            updateSidebar();
+            
+            // Zoom back to all filtered rotations
+            if (filteredRotations.length > 0 && markersLayer.getBounds().isValid()) {
+                map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalRotations').textContent = allRotations.length;
+            document.getElementById('displayedRotations').textContent = filteredRotations.length;
+            
+            const avgRating = filteredRotations.length > 0
+                ? (filteredRotations.reduce((sum, r) => sum + r.google_rating, 0) / filteredRotations.length).toFixed(1)
+                : '0.0';
+            document.getElementById('avgRating').textContent = avgRating;
+            
+            const uniqueLocations = new Set(filteredRotations.map(r => r.location_name));
+            document.getElementById('locationsCount').textContent = uniqueLocations.size;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</body>
+</html>
