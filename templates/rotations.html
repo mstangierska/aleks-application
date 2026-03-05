@@ -1,8 +1,12 @@
 <!DOCTYPE html>
+<!-- Version: 2.0.0 - Cache-bust -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-cache="no-cache, no-store, must-revalidate">
+    <meta http-pragma="no-cache">
+    <meta http-expires="0">
     <title>UK Medical Rotations Finder 💜</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
@@ -17,7 +21,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
@@ -32,94 +36,177 @@
         header {
             background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
             color: white;
-            padding: 20px 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 12px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         h1 {
-            font-size: 2em;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 1.25em;
+            margin-bottom: 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         .subtitle {
-            font-size: 0.95em;
-            opacity: 0.9;
+            display: none;
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
+        /* Floating Filter Panel */
         .filters-panel {
-            background: #f8f7ff;
-            padding: 15px 30px;
-            border-bottom: 2px solid #e9d5ff;
+            position: fixed;
+            top: 60px;
+            left: -380px;
+            width: 360px;
+            height: calc(100vh - 120px);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+            border-radius: 0 16px 16px 0;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px 20px 40px 20px;
+        }
+        
+        .filters-panel.show {
+            left: 0;
+        }
+        
+        .filter-panel-header {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            justify-content: space-between;
             align-items: center;
+            padding: 12px;
+            border-bottom: 2px solid #e9d5ff;
+            margin-bottom: 20px;
+        }
+        
+        .filter-panel-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #6b21a8;
+            letter-spacing: -0.02em;
+        }
+        
+        .close-panel-btn {
+            background: none;
+            border: none;
+            font-size: 1.4em;
+            cursor: pointer;
+            color: #6b21a8;
+            padding: 4px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .close-panel-btn:hover {
+            background: #f3e8ff;
+            transform: rotate(90deg);
+        }
+
+        .filters-container {
+            display: none;
         }
 
         .filter-group {
-            flex: 1;
-            min-width: 150px;
+            margin-bottom: 18px;
         }
 
         .filter-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #6b21a8;
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 0.9em;
         }
 
         select, input {
             width: 100%;
-            padding: 8px 12px;
-            border: 2px solid #d8b4fe;
-            border-radius: 6px;
-            font-size: 0.9em;
+            padding: 10px 12px;
+            border: 2px solid #e9d5ff;
+            border-radius: 8px;
+            font-size: 0.95em;
             background: white;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         select:hover, input:hover {
-            border-color: #a855f7;
+            border-color: #c084fc;
+            background: #faf8ff;
         }
 
         select:focus, input:focus {
             outline: none;
             border-color: #7c3aed;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+            background: white;
         }
 
         .btn {
-            padding: 8px 16px;
+            padding: 10px 16px;
             background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95em;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
         }
 
         .btn-secondary {
             background: white;
             color: #7c3aed;
             border: 2px solid #7c3aed;
+            box-shadow: none;
         }
 
         .stats-bar {
             background: white;
-            padding: 10px 30px;
+            padding: 12px 20px;
             display: flex;
-            gap: 30px;
+            gap: 24px;
             flex-wrap: wrap;
-            border-bottom: 1px solid #e9d5ff;
+            border-bottom: 2px solid #e9d5ff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .stat-item {
@@ -131,16 +218,17 @@
         .stat-label {
             color: #6b21a8;
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 0.9em;
         }
 
         .stat-value {
             background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
             color: white;
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 12px;
             font-weight: 700;
-            font-size: 0.85em;
+            font-size: 0.9em;
+            box-shadow: 0 2px 6px rgba(124, 58, 237, 0.3);
         }
 
         .main-content {
@@ -160,45 +248,49 @@
         }
 
         .sidebar {
-            width: 400px;
+            width: 380px;
             background: white;
             overflow-y: auto;
             border-left: 2px solid #e9d5ff;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
         }
 
         .sidebar-header {
-            background: #f8f7ff;
-            padding: 15px;
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            padding: 14px 16px;
             border-bottom: 2px solid #e9d5ff;
             position: sticky;
             top: 0;
             z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .sidebar-header h2 {
             color: #6b21a8;
             font-size: 1.1em;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         .rotation-list {
-            padding: 10px;
+            padding: 12px;
         }
 
         .rotation-card {
             background: white;
             border: 2px solid #e9d5ff;
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
             margin-bottom: 12px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .rotation-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 16px rgba(124, 58, 237, 0.15);
-            border-color: #a855f7;
+            border-color: #c084fc;
         }
 
         .rotation-card.selected {
@@ -211,18 +303,19 @@
         .rotation-name {
             font-weight: 700;
             color: #6b21a8;
-            margin-bottom: 10px;
-            font-size: 0.98em;
+            margin-bottom: 8px;
+            font-size: 0.95em;
             line-height: 1.4;
+            letter-spacing: -0.01em;
         }
 
         .rotation-details {
-            font-size: 0.85em;
+            font-size: 0.9em;
             color: #64748b;
         }
 
         .rotation-detail-row {
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .detail-label {
@@ -234,61 +327,158 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: #fef3c7;
-            padding: 3px 8px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.8em;
-            font-weight: 600;
+            font-size: 0.9em;
+            font-weight: 700;
             color: #92400e;
+            box-shadow: 0 2px 4px rgba(146, 64, 14, 0.1);
         }
 
         .spec-badge {
             display: inline-block;
             background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
             color: #6b21a8;
-            padding: 4px 10px;
+            padding: 5px 10px;
             border-radius: 12px;
-            font-size: 0.7em;
+            font-size: 0.85em;
             font-weight: 600;
-            border: 1px solid #e9d5ff;
+            border: 2px solid #e9d5ff;
             transition: all 0.2s;
+            margin: 2px;
         }
         
         .spec-badge:hover {
             transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
+            box-shadow: 0 4px 8px rgba(124, 58, 237, 0.2);
+            border-color: #c084fc;
         }
         
         .hospital-badge {
             display: inline-block;
             background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
             color: #1e40af;
-            padding: 4px 10px;
+            padding: 5px 10px;
             border-radius: 12px;
-            font-size: 0.75em;
+            font-size: 0.85em;
             font-weight: 600;
-            border: 1px solid #93c5fd;
+            border: 2px solid #93c5fd;
             transition: all 0.2s;
             cursor: pointer;
+            margin: 2px;
         }
         
         .hospital-badge:hover {
             transform: translateY(-1px) scale(1.05);
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
             background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
-            border-color: #60a5fa;
+            border-color: #3b82f6;
+        }
+        
+        /* Saved Rotations Floating Panel - Positioned to avoid overlap */
+        .saved-rotations-panel {
+            position: fixed;
+            top: 60px;
+            right: -400px;
+            width: 380px;
+            height: calc(100vh - 120px);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+            border-radius: 16px 0 0 16px;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .saved-rotations-panel.show {
+            right: 0;
+        }
+        
+        .saved-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 2px solid #e9d5ff;
+            margin-bottom: 20px;
+        }
+        
+        .saved-panel-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #6b21a8;
+        }
+        
+        .saved-rotation-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            background: #f8f7ff;
+            border: 1px solid #e9d5ff;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .saved-rotation-item:hover {
+            background: #f3e8ff;
+            border-color: #d8b4fe;
+        }
+        
+        .saved-rotation-info {
+            flex: 1;
+            cursor: pointer;
+        }
+        
+        .saved-rotation-name {
+            font-weight: 600;
+            color: #6b21a8;
+            font-size: 0.65em;
+            margin-bottom: 2px;
+        }
+        
+        .saved-rotation-meta {
+            font-size: 0.55em;
+            color: #64748b;
+        }
+        
+        .btn-remove {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.55em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-remove:hover {
+            background: #dc2626;
+        }
+        
+        .empty-saved {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.65em;
+            padding: 15px;
         }
 
         /* Distance label styling */
         .distance-label {
             background: white;
-            border: 2px solid #9333ea;
-            border-radius: 6px;
-            padding: 4px 8px;
+            border: 1px solid #9333ea;
+            border-radius: 4px;
+            padding: 2px 4px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 0.6em;
             color: #6b21a8;
-            box-shadow: 0 2px 6px rgba(147, 51, 234, 0.3);
+            box-shadow: 0 1px 3px rgba(147, 51, 234, 0.2);
             white-space: nowrap;
         }
 
@@ -298,18 +488,18 @@
             right: 10px;
             z-index: 1000;
             background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 6px;
+            border-radius: 6px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
         }
 
         .london-controls label {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
             color: #6b21a8;
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 0.6em;
             cursor: pointer;
         }
 
@@ -320,28 +510,51 @@
 
         .commute-info {
             position: absolute;
-            bottom: 10px;
-            left: 10px;
+            bottom: 20px;
+            left: 20px;
             z-index: 1000;
-            background: white;
-            padding: 18px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            max-width: 350px;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            max-width: 420px;
+            max-height: calc(100% - 40px);
             display: none;
-            backdrop-filter: blur(10px);
-            border: 1px solid #e9d5ff;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            border: 2px solid #e9d5ff;
         }
 
         .commute-info.show {
-            display: block;
-            animation: slideIn 0.3s ease-out;
+            display: flex;
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .commute-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.98);
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e9d5ff;
+            z-index: 1;
+        }
+
+        #commuteDetails {
+            overflow: auto;
+            min-height: 0;
+            padding-right: 8px;
         }
         
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -351,35 +564,42 @@
 
         .commute-info h3 {
             color: #6b21a8;
-            font-size: 0.95em;
-            margin-bottom: 10px;
+            font-size: 1.05em;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         .commute-item {
-            font-size: 0.85em;
-            margin-bottom: 10px;
-            padding: 10px 12px;
-            background: #faf5ff;
-            border-radius: 8px;
-            border: 1px solid #f3e8ff;
-            transition: all 0.2s;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%);
+            border-radius: 12px;
+            border: 2px solid #e9d5ff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         
         .commute-item:hover {
-            background: #f3e8ff;
-            transform: translateX(2px);
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%);
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+            border-color: #c084fc;
         }
 
         .commute-mode {
-            font-weight: 600;
+            font-weight: 700;
             color: #7c3aed;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-size: 1.05em;
         }
 
         .no-results {
-            padding: 40px;
+            padding: 20px;
             text-align: center;
             color: #94a3b8;
+            font-size: 0.65em;
         }
 
         .leaflet-popup-content-wrapper {
@@ -439,6 +659,10 @@
             }
 
             .filters-panel {
+                padding: 0 15px 10px;
+            }
+
+            .filters-togglebar {
                 padding: 10px 15px;
             }
 
@@ -448,6 +672,13 @@
 
             .sidebar {
                 max-height: 250px;
+            }
+
+            .commute-info {
+                left: 10px;
+                right: 10px;
+                max-width: none;
+                width: auto;
             }
         }
 
@@ -489,10 +720,20 @@
     <div class="container">
         <header>
             <h1>🏥 UK Medical Rotations Finder 💜</h1>
-            <p class="subtitle">Comprehensive rotation database with maps, commute info & hospital ratings</p>
+            <div class="header-controls">
+                <button class="icon-btn" onclick="showLondon()" title="Show only London rotations">🏙️ London</button>
+                <button class="icon-btn" onclick="showAllUK()" title="Show all UK rotations">🇬🇧 UK</button>
+                <button class="icon-btn" onclick="toggleFiltersPanel()" title="Toggle Filters">🔍 Filters</button>
+                <button class="icon-btn" onclick="toggleSavedPanel()" title="Saved Rotations">❤️ Saved</button>
+            </div>
         </header>
-
-        <div class="filters-panel">
+        
+        <!-- Floating Filter Panel -->
+        <div class="filters-panel" id="filtersPanel">
+            <div class="filter-panel-header">
+                <span class="filter-panel-title">🔍 Filters</span>
+                <button class="close-panel-btn" onclick="toggleFiltersPanel()">✕</button>
+            </div>
             <div class="filter-group">
                 <label>Specialization</label>
                 <select id="specialtyFilter">
@@ -501,10 +742,10 @@
             </div>
             <div class="filter-group">
                 <label>Exclude Specializations</label>
-                <select id="excludeSpecialtiesFilter" multiple size="4" style="font-size: 0.85em;">
+                <select id="excludeSpecialtiesFilter" multiple size="4" style="font-size: 0.65em;">
                     <!-- Will be populated dynamically -->
                 </select>
-                <small style="font-size: 0.75em; color: #64748b; margin-top: 4px; display: block;">
+                <small style="font-size: 0.6em; color: #64748b; margin-top: 2px; display: block;">
                     Hold Ctrl/Cmd to select multiple
                 </small>
             </div>
@@ -524,15 +765,68 @@
                 <label>Min Rating</label>
                 <input type="number" id="ratingFilter" min="0" max="5" step="0.1" placeholder="e.g., 4.0">
             </div>
+            <div class="filter-group" style="display: flex; gap: 10px;">
+                <button class="btn" onclick="applyFilters()" style="flex: 1;">Apply Filters</button>
+                <button class="btn btn-secondary" onclick="clearFilters()" style="flex: 1;">Clear</button>
+            </div>
+        </div>
+        
+        <!-- Floating Saved Rotations Panel -->
+        <div class="saved-rotations-panel" id="savedRotationsPanel">
+            <div class="saved-panel-header">
+                <span class="saved-panel-title">❤️ Saved Rotations</span>
+                <button class="close-panel-btn" onclick="toggleSavedPanel()">✕</button>
+            </div>
+            <div id="savedRotationsList">
+                <div class="empty-saved" id="emptySaved">No saved rotations yet. Click "Save" on any rotation to add it here.</div>
+            </div>
+        </div>
+
+        <div class="filters-container" id="filtersContainer" style="display: none;">
+            <div class="filters-togglebar">
+                <div class="filters-togglebar-title">
+                    <span>Filters</span>
+                    <span class="filters-togglebar-hint" id="filtersToggleHint">(expanded)</span>
+                </div>
+                <button class="btn btn-secondary btn-small" id="filtersToggleBtn" type="button" onclick="toggleFilters()">Hide</button>
+            </div>
+
+            <div class="filters-panel-old" id="filtersPanelOld">
+            <div class="filter-group">
+                <label>Specialization</label>
+                <select id="specialtyFilterOld">
+                    <option value="">All Specializations</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Exclude Specializations</label>
+                <select id="excludeSpecialtiesFilterOld" multiple size="4" style="font-size: 0.85em;">
+                    <!-- Will be populated dynamically -->
+                </select>
+                <small style="font-size: 0.75em; color: #64748b; margin-top: 4px; display: block;">
+                    Hold Ctrl/Cmd to select multiple
+                </small>
+            </div>
+            <div class="filter-group">
+                <label>Region</label>
+                <select id="regionFilterOld">
+                    <option value="">All Regions</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Location</label>
+                <select id="locationFilterOld">
+                    <option value="">All Locations</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Min Rating</label>
+                <input type="number" id="ratingFilterOld" min="0" max="5" step="0.1" placeholder="e.g., 4.0">
+            </div>
             <div class="filter-group" style="display: flex; align-items: flex-end;">
                 <button class="btn" onclick="applyFilters()">Apply Filters</button>
             </div>
-            <div class="filter-group" style="display: flex; align-items: flex-end;">
-                <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
-            </div>
-            <div class="filter-group" style="display: flex; align-items: flex-end;">
-                <button class="btn btn-secondary" onclick="showAllLocations()">Show All Locations</button>
-            </div>
+        </div>
         </div>
 
         <div class="stats-bar">
@@ -546,11 +840,11 @@
             </div>
             <div class="stat-item">
                 <span class="stat-label">Avg Rating:</span>
-                <span class="stat-value" id="avgRating">0.0</span>
+                <span class="stat-value" id="avgRating">-</span>
             </div>
             <div class="stat-item">
                 <span class="stat-label">Locations:</span>
-                <span class="stat-value" id="locationsCount">0</span>
+                <span class="stat-value" id="uniqueLocations">0</span>
             </div>
         </div>
 
@@ -568,7 +862,7 @@
                     </label>
                 </div>
                 <div class="commute-info" id="commuteInfo">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div class="commute-info-header">
                         <h3 style="margin: 0;">Rotation Details</h3>
                         <button onclick="clearSelection()" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75em; cursor: pointer;">Clear</button>
                     </div>
@@ -601,6 +895,131 @@
         let londonBoroughs = null;
         let hospitalsData = [];
         let hospitalMarkersByName = {}; // Map hospital names to their markers for hover functionality
+
+        const FILTERS_COLLAPSED_STORAGE_KEY = 'rotations.filtersCollapsed.v1';
+        
+        // Toggle Floating Panels
+        function toggleFiltersPanel() {
+            const panel = document.getElementById('filtersPanel');
+            if (panel) {
+                panel.classList.toggle('show');
+            }
+        }
+        
+        function toggleSavedPanel() {
+            const panel = document.getElementById('savedRotationsPanel');
+            if (panel) {
+                panel.classList.toggle('show');
+                // Update the display when opening
+                if (panel.classList.contains('show')) {
+                    updateSavedRotationsDisplay();
+                }
+            }
+        }
+        
+        // LocalStorage functions for saved rotations
+        const SAVED_ROTATIONS_KEY = 'rotations.savedRotations.v1';
+        
+        function getSavedRotations() {
+            try {
+                const saved = window.localStorage.getItem(SAVED_ROTATIONS_KEY);
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                console.error('Error loading saved rotations:', e);
+                return [];
+            }
+        }
+        
+        function saveRotation(rotation) {
+            try {
+                const saved = getSavedRotations();
+                // Check if already saved (by preference/programme_name)
+                const identifier = rotation.preference || rotation.programme_name;
+                if (saved.some(r => (r.preference || r.programme_name) === identifier)) {
+                    alert('This rotation is already saved!');
+                    return;
+                }
+                saved.push(rotation);
+                window.localStorage.setItem(SAVED_ROTATIONS_KEY, JSON.stringify(saved));
+                // Automatically open the saved panel to show the saved rotation
+                const panel = document.getElementById('savedRotationsPanel');
+                if (panel && !panel.classList.contains('show')) {
+                    panel.classList.add('show');
+                }
+                updateSavedRotationsDisplay();
+            } catch (e) {
+                console.error('Error saving rotation:', e);
+                alert('Failed to save rotation. Please try again.');
+            }
+        }
+        
+        function removeRotation(index) {
+            try {
+                const saved = getSavedRotations();
+                saved.splice(index, 1);
+                window.localStorage.setItem(SAVED_ROTATIONS_KEY, JSON.stringify(saved));
+                updateSavedRotationsDisplay();
+            } catch (e) {
+                console.error('Error removing rotation:', e);
+            }
+        }
+        
+        function updateSavedRotationsDisplay() {
+            const saved = getSavedRotations();
+            const listDiv = document.getElementById('savedRotationsList');
+            const emptyDiv = document.getElementById('emptySaved');
+            
+            if (saved.length === 0) {
+                if (emptyDiv) emptyDiv.style.display = 'block';
+                listDiv.querySelectorAll('.saved-rotation-item').forEach(el => el.remove());
+                return;
+            }
+            
+            if (emptyDiv) emptyDiv.style.display = 'none';
+            
+            // Remove old items
+            listDiv.querySelectorAll('.saved-rotation-item').forEach(el => el.remove());
+            
+            // Add saved rotations
+            saved.forEach((rotation, index) => {
+                const item = document.createElement('div');
+                item.className = 'saved-rotation-item';
+                item.innerHTML = `
+                    <div class="saved-rotation-info" onclick="showSavedRotation(${index})">
+                        <div class="saved-rotation-name">${rotation.preference || rotation.programme_name}</div>
+                        <div class="saved-rotation-meta">${rotation.location_name}, ${rotation.region} • ★ ${rotation.google_rating.toFixed(1)}</div>
+                    </div>
+                    <button class="btn-remove" onclick="removeRotation(${index})">✕</button>
+                `;
+                listDiv.appendChild(item);
+            });
+        }
+        
+        function showSavedRotation(index) {
+            const saved = getSavedRotations();
+            if (saved[index]) {
+                // Close the saved panel
+                toggleSavedPanel();
+                // Find and show the rotation
+                const rotation = saved[index];
+                selectRotation(rotation);
+            }
+        }
+
+        function setFiltersCollapsed(collapsed) {
+            // Deprecated - keeping for compatibility but not used in new floating panel design
+            return;
+        }
+
+        function toggleFilters() {
+            // Deprecated - using toggleFiltersPanel() instead
+            return;
+        }
+
+        function initializeFiltersUi() {
+            // Deprecated - not needed for floating panel design
+            return;
+        }
 
         // Initialize map
         function initMap() {
@@ -964,6 +1383,46 @@
             updateSidebar();
             updateStats();
         }
+        
+        function clearFilters() {
+            // Clear all filters to show all rotations
+            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('regionFilter').value = '';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+            document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1;
+            applyFilters();
+        }
+
+        function showLondon() {
+            // Set filters to show only London rotations
+            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('regionFilter').value = 'London';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+            document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1;
+            applyFilters();
+            
+            // Zoom map to London
+            if (map) {
+                map.setView([51.5074, -0.1278], 10);
+            }
+        }
+
+        function showAllUK() {
+            // Clear all filters to show all UK rotations
+            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('regionFilter').value = '';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+            document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1;
+            applyFilters();
+            
+            // Zoom map to show all of UK
+            if (map) {
+                map.setView([54.5, -2.5], 6);
+            }
+        }
 
         function resetFilters() {
             // Clear any selected rotation
@@ -1048,6 +1507,11 @@
         function updateSidebar() {
             const listContainer = document.getElementById('rotationList');
             const titleElement = document.getElementById('sidebarTitle');
+            
+            if (!listContainer || !titleElement) {
+                console.error('Sidebar elements not found');
+                return;
+            }
 
             titleElement.textContent = `${filteredRotations.length} Rotation${filteredRotations.length !== 1 ? 's' : ''}`;
 
@@ -1654,6 +2118,63 @@
         }
 
         // Show commute information
+        // Cost of Living Data (from rotationData.ts)
+        const costOfLivingData = [
+            { area: "London (Central)", region: "London", avgRentOneBed: 2100, avgRentTwoBed: 3000, mealOut: 18, monthlyTransport: 160, groceriesMonthly: 300, overallIndex: 10 },
+            { area: "London (Zone 2-3)", region: "London", avgRentOneBed: 1600, avgRentTwoBed: 2200, mealOut: 15, monthlyTransport: 150, groceriesMonthly: 280, overallIndex: 9 },
+            { area: "London (Zone 4-6)", region: "London", avgRentOneBed: 1200, avgRentTwoBed: 1600, mealOut: 13, monthlyTransport: 140, groceriesMonthly: 260, overallIndex: 8 },
+            { area: "Oxford", region: "Thames Valley", avgRentOneBed: 1200, avgRentTwoBed: 1550, mealOut: 14, monthlyTransport: 75, groceriesMonthly: 250, overallIndex: 8 },
+            { area: "Reading", region: "Thames Valley", avgRentOneBed: 1050, avgRentTwoBed: 1350, mealOut: 13, monthlyTransport: 70, groceriesMonthly: 240, overallIndex: 7 },
+            { area: "Cambridge", region: "East of England", avgRentOneBed: 1100, avgRentTwoBed: 1400, mealOut: 14, monthlyTransport: 60, groceriesMonthly: 240, overallIndex: 7 },
+            { area: "Brighton", region: "KSS", avgRentOneBed: 1050, avgRentTwoBed: 1400, mealOut: 14, monthlyTransport: 65, groceriesMonthly: 240, overallIndex: 7 },
+            { area: "Manchester", region: "North West", avgRentOneBed: 850, avgRentTwoBed: 1100, mealOut: 12, monthlyTransport: 75, groceriesMonthly: 220, overallIndex: 6 },
+            { area: "Birmingham", region: "West Midlands", avgRentOneBed: 800, avgRentTwoBed: 1050, mealOut: 12, monthlyTransport: 65, groceriesMonthly: 220, overallIndex: 6 },
+            { area: "Leeds", region: "Yorkshire and the Humber", avgRentOneBed: 800, avgRentTwoBed: 1050, mealOut: 12, monthlyTransport: 70, groceriesMonthly: 210, overallIndex: 6 },
+            { area: "Sheffield", region: "Yorkshire and the Humber", avgRentOneBed: 700, avgRentTwoBed: 900, mealOut: 11, monthlyTransport: 60, groceriesMonthly: 200, overallIndex: 5 },
+            { area: "Liverpool", region: "North West", avgRentOneBed: 700, avgRentTwoBed: 900, mealOut: 11, monthlyTransport: 65, groceriesMonthly: 200, overallIndex: 5 },
+            { area: "Newcastle", region: "North East", avgRentOneBed: 700, avgRentTwoBed: 900, mealOut: 11, monthlyTransport: 55, groceriesMonthly: 200, overallIndex: 5 },
+            { area: "Nottingham", region: "East Midlands", avgRentOneBed: 700, avgRentTwoBed: 900, mealOut: 11, monthlyTransport: 55, groceriesMonthly: 200, overallIndex: 5 },
+            { area: "Leicester", region: "East Midlands", avgRentOneBed: 680, avgRentTwoBed: 870, mealOut: 10, monthlyTransport: 55, groceriesMonthly: 195, overallIndex: 5 },
+            { area: "Coventry", region: "West Midlands", avgRentOneBed: 750, avgRentTwoBed: 950, mealOut: 11, monthlyTransport: 60, groceriesMonthly: 200, overallIndex: 5 },
+            { area: "York", region: "Yorkshire and the Humber", avgRentOneBed: 850, avgRentTwoBed: 1050, mealOut: 13, monthlyTransport: 55, groceriesMonthly: 210, overallIndex: 6 },
+            { area: "Derby", region: "East Midlands", avgRentOneBed: 620, avgRentTwoBed: 800, mealOut: 10, monthlyTransport: 55, groceriesMonthly: 190, overallIndex: 4 },
+            { area: "Preston", region: "North West", avgRentOneBed: 580, avgRentTwoBed: 750, mealOut: 10, monthlyTransport: 55, groceriesMonthly: 190, overallIndex: 4 },
+            { area: "Blackpool", region: "North West", avgRentOneBed: 500, avgRentTwoBed: 650, mealOut: 9, monthlyTransport: 50, groceriesMonthly: 180, overallIndex: 3 },
+            { area: "Lincoln", region: "East Midlands", avgRentOneBed: 580, avgRentTwoBed: 740, mealOut: 10, monthlyTransport: 45, groceriesMonthly: 185, overallIndex: 4 },
+            { area: "Hull", region: "Yorkshire and the Humber", avgRentOneBed: 500, avgRentTwoBed: 650, mealOut: 9, monthlyTransport: 50, groceriesMonthly: 180, overallIndex: 3 },
+            { area: "Sunderland", region: "North East", avgRentOneBed: 500, avgRentTwoBed: 650, mealOut: 9, monthlyTransport: 50, groceriesMonthly: 180, overallIndex: 3 },
+            { area: "Belfast", region: "Northern Ireland", avgRentOneBed: 700, avgRentTwoBed: 900, mealOut: 11, monthlyTransport: 55, groceriesMonthly: 200, overallIndex: 5 },
+            { area: "Cardiff", region: "Wales", avgRentOneBed: 750, avgRentTwoBed: 950, mealOut: 11, monthlyTransport: 60, groceriesMonthly: 200, overallIndex: 5 },
+            { area: "Milton Keynes", region: "Thames Valley", avgRentOneBed: 900, avgRentTwoBed: 1150, mealOut: 12, monthlyTransport: 65, groceriesMonthly: 230, overallIndex: 6 },
+            { area: "Stoke-on-Trent", region: "West Midlands", avgRentOneBed: 500, avgRentTwoBed: 650, mealOut: 9, monthlyTransport: 50, groceriesMonthly: 180, overallIndex: 3 },
+            { area: "Wolverhampton", region: "West Midlands", avgRentOneBed: 600, avgRentTwoBed: 780, mealOut: 10, monthlyTransport: 55, groceriesMonthly: 190, overallIndex: 4 },
+            { area: "Southampton", region: "Wessex", avgRentOneBed: 950, avgRentTwoBed: 1200, mealOut: 13, monthlyTransport: 65, groceriesMonthly: 230, overallIndex: 6 },
+            { area: "Portsmouth", region: "Wessex", avgRentOneBed: 900, avgRentTwoBed: 1150, mealOut: 12, monthlyTransport: 60, groceriesMonthly: 220, overallIndex: 6 },
+            { area: "Bristol", region: "South West", avgRentOneBed: 1000, avgRentTwoBed: 1300, mealOut: 13, monthlyTransport: 70, groceriesMonthly: 240, overallIndex: 7 },
+            { area: "Exeter", region: "South West", avgRentOneBed: 850, avgRentTwoBed: 1100, mealOut: 12, monthlyTransport: 55, groceriesMonthly: 210, overallIndex: 6 },
+            { area: "Plymouth", region: "South West", avgRentOneBed: 750, avgRentTwoBed: 950, mealOut: 11, monthlyTransport: 50, groceriesMonthly: 200, overallIndex: 5 }
+        ];
+
+        function getCostOfLivingForArea(locationName, region) {
+            const lower = locationName.toLowerCase();
+            const regionLower = region.toLowerCase();
+            
+            // Try exact match first
+            let match = costOfLivingData.find(c => lower.includes(c.area.toLowerCase()) || c.area.toLowerCase().includes(lower));
+            
+            // If no match and it's a London location, use London Zone 2-3 as default
+            if (!match && regionLower.includes('london')) {
+                match = costOfLivingData.find(c => c.area === 'London (Zone 2-3)');
+            }
+            
+            // If still no match, try by region
+            if (!match) {
+                match = costOfLivingData.find(c => c.region.toLowerCase().includes(regionLower) || regionLower.includes(c.region.toLowerCase()));
+            }
+            
+            return match;
+        }
+
         async function showCommuteInfo(rotation) {
             const commuteInfoDiv = document.getElementById('commuteInfo');
             const commuteDetailsDiv = document.getElementById('commuteDetails');
@@ -1712,6 +2233,55 @@
                 `;
             }
 
+            // Get cost of living data
+            const costData = getCostOfLivingForArea(rotation.location_name, rotation.region);
+            let costOfLivingInfo = '';
+            if (costData) {
+                const affordabilityColors = {
+                    10: { bg: '#fee2e2', border: '#dc2626', text: '#7f1d1d' },  // Very Expensive
+                    9:  { bg: '#fed7aa', border: '#ea580c', text: '#7c2d12' },  // Expensive
+                    8:  { bg: '#fef3c7', border: '#f59e0b', text: '#78350f' },  // High
+                    7:  { bg: '#fef3c7', border: '#f59e0b', text: '#78350f' },  // High
+                    6:  { bg: '#fef9c3', border: '#eab308', text: '#713f12' },  // Moderate-High
+                    5:  { bg: '#d9f99d', border: '#84cc16', text: '#365314' },  // Moderate
+                    4:  { bg: '#bbf7d0', border: '#22c55e', text: '#14532d' },  // Affordable
+                    3:  { bg: '#bbf7d0', border: '#22c55e', text: '#14532d' }   // Very Affordable
+                };
+                const colorScheme = affordabilityColors[costData.overallIndex] || affordabilityColors[5];
+                
+                costOfLivingInfo = `
+                    <div class="commute-item" style="background: ${colorScheme.bg}; border-left: 4px solid ${colorScheme.border};">
+                        <div class="commute-mode" style="color: ${colorScheme.text}; font-weight: 700;">💷 Cost of Living - ${costData.area}</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 0.85em;">
+                            <div>
+                                <div style="color: #64748b; font-size: 0.8em; margin-bottom: 2px;">1-Bed Rent</div>
+                                <div style="font-weight: 600; color: #1f2937;">£${costData.avgRentOneBed}/mo</div>
+                            </div>
+                            <div>
+                                <div style="color: #64748b; font-size: 0.8em; margin-bottom: 2px;">2-Bed Rent</div>
+                                <div style="font-weight: 600; color: #1f2937;">£${costData.avgRentTwoBed}/mo</div>
+                            </div>
+                            <div>
+                                <div style="color: #64748b; font-size: 0.8em; margin-bottom: 2px;">Meal Out</div>
+                                <div style="font-weight: 600; color: #1f2937;">£${costData.mealOut}</div>
+                            </div>
+                            <div>
+                                <div style="color: #64748b; font-size: 0.8em; margin-bottom: 2px;">Transport</div>
+                                <div style="font-weight: 600; color: #1f2937;">£${costData.monthlyTransport}/mo</div>
+                            </div>
+                            <div>
+                                <div style="color: #64748b; font-size: 0.8em; margin-bottom: 2px;">Groceries</div>
+                                <div style="font-weight: 600; color: #1f2937;">£${costData.groceriesMonthly}/mo</div>
+                            </div>
+                            <div>
+                                <div style="color: #64748b; font-size: 0.8em; margin-bottom: 2px;">Cost Index</div>
+                                <div style="font-weight: 600; color: ${colorScheme.text};">${costData.overallIndex}/10</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             commuteDetailsDiv.innerHTML = `
                 <div class="commute-item" style="background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border-left: 4px solid #9333ea;">
                     <div class="commute-mode" style="color: #6b21a8; font-weight: 700; font-size: 0.95em;">${rotation.preference || rotation.programme_name}</div>
@@ -1724,12 +2294,18 @@
                     <div class="commute-mode">Rotation Location</div>
                     <div>${rotation.location_name}, ${rotation.region}</div>
                 </div>
+                ${costOfLivingInfo}
                 ${specialtiesInfo}
                 ${hospitalInfo}
                 ${extractedHospitals}
                 ${descriptionInfo}
-                <div class="commute-item" style="font-size: 0.8em; color: #94a3b8; background: #f8fafc; border: 1px dashed #cbd5e1;">
-                    Red markers show hospital locations. Hover over hospital badges to highlight them on the map. Each rotation lasts 6 months.
+                <div class="commute-item">
+                    <button class="btn" onclick="saveRotation(${JSON.stringify(rotation).replace(/"/g, '&quot;')})" style="width: 100%;">
+                        ❤️ Save this Rotation
+                    </button>
+                </div>
+                <div class="commute-item" style="font-size: 0.85em; color: #94a3b8; background: #f8fafc; border: 2px dashed #cbd5e1;">
+                    Red markers show hospital locations. Hover over hospital badges to highlight them on the map. Rotation durations may vary by programme.
                 </div>
             `;
 
@@ -1824,20 +2400,33 @@
 
         // Update statistics
         function updateStats() {
-            document.getElementById('totalRotations').textContent = allRotations.length;
-            document.getElementById('displayedRotations').textContent = filteredRotations.length;
+            const totalRotationsEl = document.getElementById('totalRotations');
+            const displayedRotationsEl = document.getElementById('displayedRotations');
+            const avgRatingEl = document.getElementById('avgRating');
+            const uniqueLocationsEl = document.getElementById('uniqueLocations');
+            
+            if (!totalRotationsEl || !displayedRotationsEl || !avgRatingEl || !uniqueLocationsEl) {
+                console.error('Stats elements not found');
+                return;
+            }
+            
+            totalRotationsEl.textContent = allRotations.length;
+            displayedRotationsEl.textContent = filteredRotations.length;
             
             const avgRating = filteredRotations.length > 0
                 ? (filteredRotations.reduce((sum, r) => sum + r.google_rating, 0) / filteredRotations.length).toFixed(1)
                 : '0.0';
-            document.getElementById('avgRating').textContent = avgRating;
+            avgRatingEl.textContent = avgRating;
             
             const uniqueLocations = new Set(filteredRotations.map(r => r.location_name));
-            document.getElementById('locationsCount').textContent = uniqueLocations.size;
+            uniqueLocationsEl.textContent = uniqueLocations.size;
         }
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', initMap);
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFiltersUi();
+            initMap();
+        });
     </script>
 </body>
 </html>
