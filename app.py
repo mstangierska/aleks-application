@@ -10,11 +10,16 @@ Features:
 
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
+import folium
 import json
 import random
+import os
 
 app = Flask(__name__)
 CORS(app)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
 # London hospitals with haematology rotations
 HOSPITALS = {
@@ -292,7 +297,11 @@ def index():
 @app.route('/rotations')
 def rotations_page():
     """New page showing all 1563 rotations with filtering"""
-    return render_template('rotations.html')
+    response = app.make_response(render_template('rotations.html'))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/test')
 def test():
@@ -550,8 +559,8 @@ def generate_map():
     '''
     m.get_root().html.add_child(folium.Element(legend_html))
     
-    # Save to templates
-    m.save('/workspace/templates/map.html')
+    os.makedirs(TEMPLATES_DIR, exist_ok=True)
+    m.save(os.path.join(TEMPLATES_DIR, 'map.html'))
     
     return jsonify({"status": "success", "message": "Map generated successfully"})
 
@@ -649,6 +658,5 @@ def get_hospitals_from_rotations():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    import os
-    os.makedirs('/workspace/templates', exist_ok=True)
+    os.makedirs(TEMPLATES_DIR, exist_ok=True)
     app.run(host='0.0.0.0', port=12000, debug=False, use_reloader=False)
