@@ -757,5 +757,13 @@
     "lon": 0.1755,
     "hospital_name": "Queen's Hospital",
     "google_rating": 3.3
+  },
+  {
+    "hospital_name": "The Princess Royal Hospital",
+    "name": "Telford",
+    "region": "West Midlands",
+    "lat": 52.7124264,
+    "lon": -2.5118238,
+    "google_rating": 3.2
   }
 ]
