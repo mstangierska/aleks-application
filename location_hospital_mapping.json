@@ -1,0 +1,2036 @@
+{
+  "York": [
+    {
+      "name": "York Hospital",
+      "address": "Wigginton Rd, Clifton, York YO31 8HE, United Kingdom",
+      "location": {
+        "lat": 53.9699817,
+        "lng": -1.083555
+      },
+      "rating": 3.9,
+      "place_id": "ChIJKSB_26ExeUgRxOv3xZ35frs"
+    }
+  ],
+  "UK": [
+    {
+      "name": "The Royal London Hospital",
+      "address": "Whitechapel Rd, London E1 1FR, United Kingdom",
+      "location": {
+        "lat": 51.5183701,
+        "lng": -0.0589782
+      },
+      "rating": 3.1,
+      "place_id": "ChIJ69Amvc0cdkgRLNOj6dq9K9k"
+    },
+    {
+      "name": "St Thomas' Hospital",
+      "address": "Westminster Bridge Rd, London SE1 7EH, United Kingdom",
+      "location": {
+        "lat": 51.4991539,
+        "lng": -0.1188859
+      },
+      "rating": 4.2,
+      "place_id": "ChIJe4cW3cAEdkgR0RK8zGZJPAQ"
+    },
+    {
+      "name": "Queen Elizabeth Hospital Birmingham",
+      "address": "Queen Elizabeth Hospital, Mindelsohn Way, Birmingham B15 2GW, United Kingdom",
+      "location": {
+        "lat": 52.451853,
+        "lng": -1.9430371
+      },
+      "rating": 3.7,
+      "place_id": "ChIJySj7K7a9cEgR-MU6S-G7R3I"
+    },
+    {
+      "name": "Whittington Hospital",
+      "address": "Magdala Ave, London N19 5NF, United Kingdom",
+      "location": {
+        "lat": 51.5665993,
+        "lng": -0.1398534
+      },
+      "rating": 3.1,
+      "place_id": "ChIJL9kMna0bdkgRBx1cByEZYik"
+    },
+    {
+      "name": "Royal Brompton Hospital",
+      "address": "Sydney St, London SW3 6NP, United Kingdom",
+      "location": {
+        "lat": 51.4891103,
+        "lng": -0.1701254
+      },
+      "rating": 4.2,
+      "place_id": "ChIJqzEGXWkFdkgRJW4aL0N7BCU"
+    },
+    {
+      "name": "London Bridge Hospital, part of HCA Healthcare UK",
+      "address": "London Bridge Hosp, 27 Tooley St, London SE1 2PR, United Kingdom",
+      "location": {
+        "lat": 51.5062543,
+        "lng": -0.0860519
+      },
+      "rating": 4.6,
+      "place_id": "ChIJE52681ADdkgR6Sv8TJwvcXU"
+    },
+    {
+      "name": "Harefield Hospital",
+      "address": "Hill End Rd, Harefield, Uxbridge UB9 6JH, United Kingdom",
+      "location": {
+        "lat": 51.6067699,
+        "lng": -0.4827023999999999
+      },
+      "rating": 4.5,
+      "place_id": "ChIJ5__kPlBpdkgRAFda1fbmMd8"
+    },
+    {
+      "name": "Hammersmith Hospital",
+      "address": "Du Cane Rd, London W12 0HS, United Kingdom",
+      "location": {
+        "lat": 51.5171954,
+        "lng": -0.2357804999999999
+      },
+      "rating": 4.1,
+      "place_id": "ChIJ-dsIG9URdkgRlmfb4pkrhVA"
+    },
+    {
+      "name": "Royal Hallamshire Hospital",
+      "address": "Glossop Rd, Broomhall, Sheffield S10 2JF, United Kingdom",
+      "location": {
+        "lat": 53.37837589999999,
+        "lng": -1.4927827
+      },
+      "rating": 4.1,
+      "place_id": "ChIJGd79-HaCeUgRdKnRAre-HEM"
+    },
+    {
+      "name": "Guy's Hospital",
+      "address": "Great Maze Pond, London SE1 9RT, United Kingdom",
+      "location": {
+        "lat": 51.5033114,
+        "lng": -0.08685459999999999
+      },
+      "rating": 4.2,
+      "place_id": "ChIJi7ccWVcDdkgRYTy6QMHZuiA"
+    },
+    {
+      "name": "Royal Derby Hospital",
+      "address": "Uttoxeter Rd, Derby DE22 3NE, United Kingdom",
+      "location": {
+        "lat": 52.9109983,
+        "lng": -1.5128643
+      },
+      "rating": 3.6,
+      "place_id": "ChIJ125I7Nn2eUgRkYtgZ6kRexE"
+    },
+    {
+      "name": "The Portland Hospital, part of HCA Healthcare UK",
+      "address": "The Portland Hospital, 205-209 Great Portland St, London W1W 5AH, United Kingdom",
+      "location": {
+        "lat": 51.5230256,
+        "lng": -0.1442027
+      },
+      "rating": 4.3,
+      "place_id": "ChIJwwKKBNcadkgR6CahIF8eBDk"
+    },
+    {
+      "name": "Hillingdon Hospital",
+      "address": "Pield Heath Rd, Uxbridge UB8 3NN, United Kingdom",
+      "location": {
+        "lat": 51.5260201,
+        "lng": -0.4619298
+      },
+      "rating": 2.5,
+      "place_id": "ChIJnzQ6R-VtdkgRNgnUhIdmhf8"
+    },
+    {
+      "name": "The Princess Grace Hospital, part of HCA Healthcare UK",
+      "address": "The Princess Grace Hospital, 42-52 Nottingham Pl, London W1U 5NY, United Kingdom",
+      "location": {
+        "lat": 51.5226412,
+        "lng": -0.1530504
+      },
+      "rating": 4.3,
+      "place_id": "ChIJURk8Kc4adkgRilIagE7HIeg"
+    },
+    {
+      "name": "The Wellington Hospital, part of HCA Healthcare UK",
+      "address": "The Wellington Hospital, 8A Wellington Pl, London NW8 9LE, United Kingdom",
+      "location": {
+        "lat": 51.5315845,
+        "lng": -0.1714235
+      },
+      "rating": 4,
+      "place_id": "ChIJqRHlHrwadkgRPPNeBaFY4uE"
+    },
+    {
+      "name": "St Bartholomew's Hospital",
+      "address": "W Smithfield, London EC1A 7BE, United Kingdom",
+      "location": {
+        "lat": 51.5168725,
+        "lng": -0.1014168
+      },
+      "rating": 4,
+      "place_id": "ChIJjc9of1MbdkgRGvFEbt0j_vc"
+    },
+    {
+      "name": "Horton General Hospital",
+      "address": "Oxford Rd, Banbury OX16 9AL, United Kingdom",
+      "location": {
+        "lat": 52.0540309,
+        "lng": -1.3359504
+      },
+      "rating": 4,
+      "place_id": "ChIJizfJq8snd0gR7GRxDssv20E"
+    },
+    {
+      "name": "Eastbourne District General Hospital",
+      "address": "Kings Dr, Eastbourne BN21 2UD, United Kingdom",
+      "location": {
+        "lat": 50.7864002,
+        "lng": 0.2692998
+      },
+      "rating": 3.8,
+      "place_id": "ChIJO6GNL2Fx30cRzz0nVOmywbo"
+    },
+    {
+      "name": "The Priory Hospital",
+      "address": "Priory Rd, Edgbaston, Birmingham B5 7UG, United Kingdom",
+      "location": {
+        "lat": 52.45606799999999,
+        "lng": -1.9127805
+      },
+      "rating": 4.7,
+      "place_id": "ChIJuTwd90a8cEgR42iWIhtjwCY"
+    },
+    {
+      "name": "The Harborne Hospital, part of HCA Healthcare UK",
+      "address": "Mindelsohn Way, Birmingham B15 2TQ, United Kingdom",
+      "location": {
+        "lat": 52.4526921,
+        "lng": -1.9410879
+      },
+      "rating": 3.6,
+      "place_id": "ChIJYQERLae9cEgRgB7DMj58-FA"
+    }
+  ],
+  "Birmingham": [
+    {
+      "name": "Queen Elizabeth Hospital Birmingham",
+      "address": "Queen Elizabeth Hospital, Mindelsohn Way, Birmingham B15 2GW, United Kingdom",
+      "location": {
+        "lat": 52.451853,
+        "lng": -1.9430371
+      },
+      "rating": 3.7,
+      "place_id": "ChIJySj7K7a9cEgR-MU6S-G7R3I"
+    },
+    {
+      "name": "Heartlands Hospital",
+      "address": "Bordesley Green E, Birmingham B9 5SS, United Kingdom",
+      "location": {
+        "lat": 52.4781907,
+        "lng": -1.8287049
+      },
+      "rating": 2.8,
+      "place_id": "ChIJlzygAf66cEgRW0H3UDyqlXI"
+    },
+    {
+      "name": "The Princess Royal Hospital",
+      "vicinity": "Telford",
+      "address": "Apley Castle, Telford TF1 6TF, United Kingdom",
+      "location": {
+        "lat": 52.7124264,
+        "lng": -2.5118238
+      },
+      "rating": 3.2
+    }
+  ],
+  "North East London": [
+    {
+      "name": "The Royal London Hospital",
+      "address": "Whitechapel Rd, London E1 1FR, United Kingdom",
+      "location": {
+        "lat": 51.5183701,
+        "lng": -0.0589782
+      },
+      "rating": 3.1,
+      "place_id": "ChIJ69Amvc0cdkgRLNOj6dq9K9k"
+    },
+    {
+      "name": "Royal Free Hospital",
+      "address": "Pond St, London NW3 2QG, United Kingdom",
+      "location": {
+        "lat": 51.5538237,
+        "lng": -0.1661582
+      },
+      "rating": 3.3,
+      "place_id": "ChIJn8F5SosadkgR7j4MU24CXFM"
+    },
+    {
+      "name": "King's College Hospital",
+      "address": "Denmark Hill, London SE5 9RS, United Kingdom",
+      "location": {
+        "lat": 51.4686713,
+        "lng": -0.0923331
+      },
+      "rating": 3.6,
+      "place_id": "ChIJjef2qoADdkgRC-xkLjIcQX0"
+    },
+    {
+      "name": "North Middlesex University Hospital",
+      "address": "Sterling Way, London N18 1QX, United Kingdom",
+      "location": {
+        "lat": 51.6131618,
+        "lng": -0.0735832
+      },
+      "rating": 2.3,
+      "place_id": "ChIJrQg4SLwedkgRN9ZytIrC3JM"
+    },
+    {
+      "name": "Homerton Healthcare NHS Foundation Trust",
+      "address": "London E9 6SR, United Kingdom",
+      "location": {
+        "lat": 51.5506338,
+        "lng": -0.0460987
+      },
+      "rating": 3.4,
+      "place_id": "ChIJW8xBawIddkgRxklmz5w6YJM"
+    },
+    {
+      "name": "Whittington Hospital",
+      "address": "Magdala Ave, London N19 5NF, United Kingdom",
+      "location": {
+        "lat": 51.5665993,
+        "lng": -0.1398534
+      },
+      "rating": 3.1,
+      "place_id": "ChIJL9kMna0bdkgRBx1cByEZYik"
+    },
+    {
+      "name": "Newham University Hospital",
+      "address": "Glen Rd, London E13 8SL, United Kingdom",
+      "location": {
+        "lat": 51.5227127,
+        "lng": 0.0379309
+      },
+      "rating": 2.2,
+      "place_id": "ChIJZVcEfdCn2EcRq7dHSlrznEw"
+    },
+    {
+      "name": "Whipps Cross University Hospital",
+      "address": "Whipps Cross Rd, London E11 1NR, United Kingdom",
+      "location": {
+        "lat": 51.5778196,
+        "lng": 0.0032545
+      },
+      "rating": 2.7,
+      "place_id": "ChIJ5aTuzV-n2EcR46hYS4Xx2ms"
+    },
+    {
+      "name": "Queen Elizabeth Hospital",
+      "address": "Stadium Rd, London SE18 4QH, United Kingdom",
+      "location": {
+        "lat": 51.4780741,
+        "lng": 0.0500695
+      },
+      "rating": 2.7,
+      "place_id": "ChIJQ-v2Ufmo2EcRlzMQMAogt3A"
+    },
+    {
+      "name": "The London Independent Hospital",
+      "address": "1 Beaumont Square, London E1 4NL, United Kingdom",
+      "location": {
+        "lat": 51.5203764,
+        "lng": -0.04654759999999999
+      },
+      "rating": 4.4,
+      "place_id": "ChIJl4cP-SkddkgR8OgPGTXYMdU"
+    },
+    {
+      "name": "Mile End Hospital",
+      "address": "via A104, 275 Bancroft Rd, London E1 4DG, United Kingdom",
+      "location": {
+        "lat": 51.5245377,
+        "lng": -0.0431959
+      },
+      "rating": 3.3,
+      "place_id": "ChIJAV9spCgddkgRrwybcQy9L9Y"
+    },
+    {
+      "name": "Central Middlesex Hospital",
+      "address": "Acton Ln, London NW10 7NS, United Kingdom",
+      "location": {
+        "lat": 51.530944,
+        "lng": -0.2690778
+      },
+      "rating": 3.3,
+      "place_id": "ChIJx-E5t-0RdkgR4e82E6NJvGk"
+    },
+    {
+      "name": "St Leonard's Hospital",
+      "address": "Nuttall St, London N1 5LZ, United Kingdom",
+      "location": {
+        "lat": 51.53392119999999,
+        "lng": -0.0772543
+      },
+      "rating": 3.2,
+      "place_id": "ChIJRz3mZLscdkgRBBU4r0FbvQ4"
+    },
+    {
+      "name": "Spire London East Hospital",
+      "address": "Roding Ln S, Woodford, Ilford, Woodford Green IG4 5PZ, United Kingdom",
+      "location": {
+        "lat": 51.5869904,
+        "lng": 0.0433908
+      },
+      "rating": 4,
+      "place_id": "ChIJxUPrRian2EcR3AR90g4TE4A"
+    },
+    {
+      "name": "Northwick Park Hospital",
+      "address": "Watford Rd, Harrow HA1 3UJ, United Kingdom",
+      "location": {
+        "lat": 51.57540359999999,
+        "lng": -0.3201721
+      },
+      "rating": 2.5,
+      "place_id": "ChIJixwz1bwTdkgRkDSUOIF4S08"
+    },
+    {
+      "name": "Princess Royal University Hospital",
+      "address": "Farnborough Common, Orpington BR6 8ND, United Kingdom",
+      "location": {
+        "lat": 51.3661498,
+        "lng": 0.05819390000000001
+      },
+      "rating": 3.5,
+      "place_id": "ChIJe7e40ESr2EcRJv530gE9_r0"
+    },
+    {
+      "name": "Finchley Memorial Hospital",
+      "address": "Finchley Memorial Hospital, Granville Rd, London N12 0JE, United Kingdom",
+      "location": {
+        "lat": 51.6054045,
+        "lng": -0.1764142
+      },
+      "rating": 3.4,
+      "place_id": "ChIJB5yLe_oZdkgR4-0vayNISRg"
+    },
+    {
+      "name": "Chase Farm Hospital",
+      "address": "127 The Ridgeway, Enfield EN2 8JL, United Kingdom",
+      "location": {
+        "lat": 51.6670427,
+        "lng": -0.1035232
+      },
+      "rating": 3.7,
+      "place_id": "ChIJNyjcxLYYdkgRJNYHVbMPzTQ"
+    },
+    {
+      "name": "Queen's Hospital",
+      "address": "Rom Valley Way, Romford RM7 0AG, United Kingdom",
+      "location": {
+        "lat": 51.56868739999999,
+        "lng": 0.1788087
+      },
+      "rating": 2.5,
+      "place_id": "ChIJgbqqSs6k2EcRAE3hGseFEQ8"
+    },
+    {
+      "name": "Barts Health NHS Trust",
+      "address": "The Royal Hospital, Whitechapel Rd, London E1 1BB, United Kingdom",
+      "location": {
+        "lat": 51.5178708,
+        "lng": -0.0588687
+      },
+      "rating": 2.8,
+      "place_id": "ChIJjc9of1MbdkgRwDocqBMWZe0"
+    }
+  ],
+  "Maidstone": [
+    {
+      "name": "Maidstone Hospital",
+      "address": "Hermitage Ln, Maidstone ME16 9QQ, United Kingdom",
+      "location": {
+        "lat": 51.2744875,
+        "lng": 0.4855864
+      },
+      "rating": 3.8,
+      "place_id": "ChIJR2Tc8-0z30cRzUriXkVWXQU"
+    }
+  ],
+  "Nottingham": [
+    {
+      "name": "Nottingham City Hospital",
+      "address": "Hucknall Rd, Nottingham NG5 1PB, United Kingdom",
+      "location": {
+        "lat": 52.9902946,
+        "lng": -1.1569294
+      },
+      "rating": 3.7,
+      "place_id": "ChIJvT08ya7BeUgRU0YlNnv8iBs"
+    }
+  ],
+  "Cambridge": [
+    {
+      "name": "Addenbrooke's Hospital",
+      "address": "Addenbrookes Hospital, Hills Rd, Cambridge CB2 0QQ, United Kingdom",
+      "location": {
+        "lat": 52.1749083,
+        "lng": 0.1416131
+      },
+      "rating": 3.8,
+      "place_id": "ChIJlanrPHl62EcRj63UPhscG6I"
+    },
+    {
+      "name": "Cambridge University Hospitals",
+      "address": "Hills Rd, Cambridge CB2 0QQ, United Kingdom",
+      "location": {
+        "lat": 52.1743086,
+        "lng": 0.1408857
+      },
+      "rating": 4.7,
+      "place_id": "ChIJqy7KVnl62EcRqHL_9DYeIzQ"
+    },
+    {
+      "name": "Royal Papworth Hospital",
+      "address": "Papworth Rd, Trumpington, Cambridge CB2 0AY, United Kingdom",
+      "location": {
+        "lat": 52.1734049,
+        "lng": 0.1358747
+      },
+      "rating": 4.6,
+      "place_id": "ChIJDcWau8bbd0gR1CLFMMjOCLk"
+    },
+    {
+      "name": "Nuffield Health Cambridge Hospital",
+      "address": "4 Trumpington Rd, Cambridge CB2 8AF, United Kingdom",
+      "location": {
+        "lat": 52.190042,
+        "lng": 0.123963
+      },
+      "rating": 4,
+      "place_id": "ChIJcTfekHV62EcRgOReDLd5tY0"
+    },
+    {
+      "name": "Spire Cambridge Lea Hospital",
+      "address": "30 New Rd, Impington, Cambridge CB24 9EL, United Kingdom",
+      "location": {
+        "lat": 52.2447053,
+        "lng": 0.1133034
+      },
+      "rating": 3.6,
+      "place_id": "ChIJuYTUTjtx2EcRcNeYJUIKVVU"
+    }
+  ],
+  "North West London": [
+    {
+      "name": "North Middlesex University Hospital",
+      "address": "Sterling Way, London N18 1QX, United Kingdom",
+      "location": {
+        "lat": 51.6131618,
+        "lng": -0.0735832
+      },
+      "rating": 2.3,
+      "place_id": "ChIJrQg4SLwedkgRN9ZytIrC3JM"
+    },
+    {
+      "name": "Central Middlesex Hospital",
+      "address": "Acton Ln, London NW10 7NS, United Kingdom",
+      "location": {
+        "lat": 51.530944,
+        "lng": -0.2690778
+      },
+      "rating": 3.3,
+      "place_id": "ChIJx-E5t-0RdkgR4e82E6NJvGk"
+    },
+    {
+      "name": "St Mary's Hospital",
+      "address": "Praed St, London W2 1NY, United Kingdom",
+      "location": {
+        "lat": 51.5175558,
+        "lng": -0.1742676
+      },
+      "rating": 3.4,
+      "place_id": "ChIJP_LG8LIadkgRs3wufNnBwDI"
+    },
+    {
+      "name": "Royal Free Hospital",
+      "address": "Pond St, London NW3 2QG, United Kingdom",
+      "location": {
+        "lat": 51.5538237,
+        "lng": -0.1661582
+      },
+      "rating": 3.3,
+      "place_id": "ChIJn8F5SosadkgR7j4MU24CXFM"
+    },
+    {
+      "name": "Charing Cross Hospital",
+      "address": "Fulham Palace Rd, London W6 8RF, United Kingdom",
+      "location": {
+        "lat": 51.4868889,
+        "lng": -0.2195543
+      },
+      "rating": 3.6,
+      "place_id": "ChIJde33x7sPdkgR9bu4O8Rl0Gw"
+    },
+    {
+      "name": "West Middlesex University Hospital",
+      "address": "Twickenham Rd, Isleworth TW7 6AF, United Kingdom",
+      "location": {
+        "lat": 51.4734184,
+        "lng": -0.3244425
+      },
+      "rating": 2.8,
+      "place_id": "ChIJYZOsWf8MdkgRAMcp4apSmlw"
+    },
+    {
+      "name": "Northwick Park Hospital",
+      "address": "Watford Rd, Harrow HA1 3UJ, United Kingdom",
+      "location": {
+        "lat": 51.57540359999999,
+        "lng": -0.3201721
+      },
+      "rating": 2.5,
+      "place_id": "ChIJixwz1bwTdkgRkDSUOIF4S08"
+    },
+    {
+      "name": "London North West University Healthcare NHS Trust",
+      "address": "Northwick Park Hospital, A404 Watford Rd, Harrow HA1 3UJ, United Kingdom",
+      "location": {
+        "lat": 51.57544230000001,
+        "lng": -0.322738
+      },
+      "rating": 3.5,
+      "place_id": "ChIJQV7QvvkTdkgRy_O1yetXF84"
+    },
+    {
+      "name": "Whittington Hospital",
+      "address": "Magdala Ave, London N19 5NF, United Kingdom",
+      "location": {
+        "lat": 51.5665993,
+        "lng": -0.1398534
+      },
+      "rating": 3.1,
+      "place_id": "ChIJL9kMna0bdkgRBx1cByEZYik"
+    },
+    {
+      "name": "University College Hospital",
+      "address": "235 Euston Rd., London NW1 2BU, United Kingdom",
+      "location": {
+        "lat": 51.5250869,
+        "lng": -0.1364556
+      },
+      "rating": 3.7,
+      "place_id": "ChIJ_RZKoCgbdkgRi8sLmI1Ka8Y"
+    },
+    {
+      "name": "Chelsea and Westminster Hospital",
+      "address": "369 Fulham Rd., London SW10 9NH, United Kingdom",
+      "location": {
+        "lat": 51.4843947,
+        "lng": -0.1817018
+      },
+      "rating": 3.9,
+      "place_id": "ChIJcz7SYWMFdkgRfxbShx-Sw5A"
+    },
+    {
+      "name": "St George's Hospital",
+      "address": "Blackshaw Rd, London SW17 0QT, United Kingdom",
+      "location": {
+        "lat": 51.4265363,
+        "lng": -0.1732006
+      },
+      "rating": 3.7,
+      "place_id": "ChIJb1nNvggGdkgRZAURrMhPQZg"
+    },
+    {
+      "name": "Hammersmith Hospital",
+      "address": "Du Cane Rd, London W12 0HS, United Kingdom",
+      "location": {
+        "lat": 51.5171954,
+        "lng": -0.2357804999999999
+      },
+      "rating": 4.1,
+      "place_id": "ChIJ-dsIG9URdkgRlmfb4pkrhVA"
+    },
+    {
+      "name": "Finchley Memorial Hospital",
+      "address": "Finchley Memorial Hospital, Granville Rd, London N12 0JE, United Kingdom",
+      "location": {
+        "lat": 51.6054045,
+        "lng": -0.1764142
+      },
+      "rating": 3.4,
+      "place_id": "ChIJB5yLe_oZdkgR4-0vayNISRg"
+    },
+    {
+      "name": "Ealing Hospital",
+      "address": "601 Uxbridge Rd, Southall UB1 3HW, United Kingdom",
+      "location": {
+        "lat": 51.5075205,
+        "lng": -0.3465216
+      },
+      "rating": 2.7,
+      "place_id": "ChIJs8peNGQNdkgRf9GMzqDKDwI"
+    },
+    {
+      "name": "Newham University Hospital",
+      "address": "Glen Rd, London E13 8SL, United Kingdom",
+      "location": {
+        "lat": 51.5227127,
+        "lng": 0.0379309
+      },
+      "rating": 2.2,
+      "place_id": "ChIJZVcEfdCn2EcRq7dHSlrznEw"
+    },
+    {
+      "name": "The Wellington Hospital, part of HCA Healthcare UK",
+      "address": "The Wellington Hospital, 8A Wellington Pl, London NW8 9LE, United Kingdom",
+      "location": {
+        "lat": 51.5315845,
+        "lng": -0.1714235
+      },
+      "rating": 4,
+      "place_id": "ChIJqRHlHrwadkgRPPNeBaFY4uE"
+    },
+    {
+      "name": "Hillingdon Hospital",
+      "address": "Pield Heath Rd, Uxbridge UB8 3NN, United Kingdom",
+      "location": {
+        "lat": 51.5260201,
+        "lng": -0.4619298
+      },
+      "rating": 2.5,
+      "place_id": "ChIJnzQ6R-VtdkgRNgnUhIdmhf8"
+    },
+    {
+      "name": "Great Ormond Street Hospital for Children",
+      "address": "Guilford St, London WC1N 3BH, United Kingdom",
+      "location": {
+        "lat": 51.5231639,
+        "lng": -0.120741
+      },
+      "rating": 4.6,
+      "place_id": "ChIJO0XQWDYbdkgRytl9ESBjqtg"
+    },
+    {
+      "name": "King's College Hospital",
+      "address": "Denmark Hill, London SE5 9RS, United Kingdom",
+      "location": {
+        "lat": 51.4686713,
+        "lng": -0.0923331
+      },
+      "rating": 3.6,
+      "place_id": "ChIJjef2qoADdkgRC-xkLjIcQX0"
+    }
+  ],
+  "South London": [
+    {
+      "name": "King's College Hospital",
+      "address": "Denmark Hill, London SE5 9RS, United Kingdom",
+      "location": {
+        "lat": 51.4686713,
+        "lng": -0.0923331
+      },
+      "rating": 3.6,
+      "place_id": "ChIJjef2qoADdkgRC-xkLjIcQX0"
+    },
+    {
+      "name": "St Thomas' Hospital",
+      "address": "Westminster Bridge Rd, London SE1 7EH, United Kingdom",
+      "location": {
+        "lat": 51.4991539,
+        "lng": -0.1188859
+      },
+      "rating": 4.2,
+      "place_id": "ChIJe4cW3cAEdkgR0RK8zGZJPAQ"
+    },
+    {
+      "name": "The Royal London Hospital",
+      "address": "Whitechapel Rd, London E1 1FR, United Kingdom",
+      "location": {
+        "lat": 51.5183701,
+        "lng": -0.0589782
+      },
+      "rating": 3.1,
+      "place_id": "ChIJ69Amvc0cdkgRLNOj6dq9K9k"
+    },
+    {
+      "name": "University College Hospital",
+      "address": "235 Euston Rd., London NW1 2BU, United Kingdom",
+      "location": {
+        "lat": 51.5250869,
+        "lng": -0.1364556
+      },
+      "rating": 3.7,
+      "place_id": "ChIJ_RZKoCgbdkgRi8sLmI1Ka8Y"
+    },
+    {
+      "name": "Guy's Hospital",
+      "address": "Great Maze Pond, London SE1 9RT, United Kingdom",
+      "location": {
+        "lat": 51.5033114,
+        "lng": -0.08685459999999999
+      },
+      "rating": 4.2,
+      "place_id": "ChIJi7ccWVcDdkgRYTy6QMHZuiA"
+    },
+    {
+      "name": "St Mary's Hospital",
+      "address": "Praed St, London W2 1NY, United Kingdom",
+      "location": {
+        "lat": 51.5175558,
+        "lng": -0.1742676
+      },
+      "rating": 3.4,
+      "place_id": "ChIJP_LG8LIadkgRs3wufNnBwDI"
+    },
+    {
+      "name": "Chelsea and Westminster Hospital",
+      "address": "369 Fulham Rd., London SW10 9NH, United Kingdom",
+      "location": {
+        "lat": 51.4843947,
+        "lng": -0.1817018
+      },
+      "rating": 3.9,
+      "place_id": "ChIJcz7SYWMFdkgRfxbShx-Sw5A"
+    },
+    {
+      "name": "Royal Free Hospital",
+      "address": "Pond St, London NW3 2QG, United Kingdom",
+      "location": {
+        "lat": 51.5538237,
+        "lng": -0.1661582
+      },
+      "rating": 3.3,
+      "place_id": "ChIJn8F5SosadkgR7j4MU24CXFM"
+    },
+    {
+      "name": "St George's Hospital",
+      "address": "Blackshaw Rd, London SW17 0QT, United Kingdom",
+      "location": {
+        "lat": 51.4265363,
+        "lng": -0.1732006
+      },
+      "rating": 3.7,
+      "place_id": "ChIJb1nNvggGdkgRZAURrMhPQZg"
+    },
+    {
+      "name": "Queen Elizabeth Hospital",
+      "address": "Stadium Rd, London SE18 4QH, United Kingdom",
+      "location": {
+        "lat": 51.4780741,
+        "lng": 0.0500695
+      },
+      "rating": 2.7,
+      "place_id": "ChIJQ-v2Ufmo2EcRlzMQMAogt3A"
+    },
+    {
+      "name": "University Hospital Lewisham",
+      "address": "Lewisham High St, London SE13 6LH, United Kingdom",
+      "location": {
+        "lat": 51.4538715,
+        "lng": -0.0173012
+      },
+      "rating": 2.9,
+      "place_id": "ChIJUfr4YmsCdkgRELaSMxNWBDw"
+    },
+    {
+      "name": "Charing Cross Hospital",
+      "address": "Fulham Palace Rd, London W6 8RF, United Kingdom",
+      "location": {
+        "lat": 51.4868889,
+        "lng": -0.2195543
+      },
+      "rating": 3.6,
+      "place_id": "ChIJde33x7sPdkgR9bu4O8Rl0Gw"
+    },
+    {
+      "name": "Croydon University Hospital",
+      "address": "530 London Rd, Thornton Heath CR7 7YE, United Kingdom",
+      "location": {
+        "lat": 51.3899222,
+        "lng": -0.1102979
+      },
+      "rating": 2.8,
+      "place_id": "ChIJDTU9g9gGdkgRIUoI4rpW9_I"
+    },
+    {
+      "name": "Princess Royal University Hospital",
+      "address": "Farnborough Common, Orpington BR6 8ND, United Kingdom",
+      "location": {
+        "lat": 51.3661498,
+        "lng": 0.05819390000000001
+      },
+      "rating": 3.5,
+      "place_id": "ChIJe7e40ESr2EcRJv530gE9_r0"
+    },
+    {
+      "name": "Kingston Hospital",
+      "address": "Galsworthy Rd, Kingston upon Thames KT2 7QB, United Kingdom",
+      "location": {
+        "lat": 51.4148217,
+        "lng": -0.2823991
+      },
+      "rating": 3.3,
+      "place_id": "ChIJUfA8slgJdkgRoBruKnLJsZM"
+    },
+    {
+      "name": "Whittington Hospital",
+      "address": "Magdala Ave, London N19 5NF, United Kingdom",
+      "location": {
+        "lat": 51.5665993,
+        "lng": -0.1398534
+      },
+      "rating": 3.1,
+      "place_id": "ChIJL9kMna0bdkgRBx1cByEZYik"
+    },
+    {
+      "name": "West Middlesex University Hospital",
+      "address": "Twickenham Rd, Isleworth TW7 6AF, United Kingdom",
+      "location": {
+        "lat": 51.4734184,
+        "lng": -0.3244425
+      },
+      "rating": 2.8,
+      "place_id": "ChIJYZOsWf8MdkgRAMcp4apSmlw"
+    },
+    {
+      "name": "The Blackheath Hospital",
+      "address": "40-42 Lee Terrace, Blackheath, London SE3 9UD, United Kingdom",
+      "location": {
+        "lat": 51.4635016,
+        "lng": 0.006594699999999999
+      },
+      "rating": 4.7,
+      "place_id": "ChIJOR-uttCp2EcRjytOyAHlpU8"
+    },
+    {
+      "name": "Homerton Healthcare NHS Foundation Trust",
+      "address": "London E9 6SR, United Kingdom",
+      "location": {
+        "lat": 51.5506338,
+        "lng": -0.0460987
+      },
+      "rating": 3.4,
+      "place_id": "ChIJW8xBawIddkgRxklmz5w6YJM"
+    },
+    {
+      "name": "St Helier Hospital",
+      "address": "Wrythe Ln, Sutton, Carshalton SM5 1AA, United Kingdom",
+      "location": {
+        "lat": 51.3805311,
+        "lng": -0.18442
+      },
+      "rating": 3,
+      "place_id": "ChIJJfo-EdcHdkgRJje08t1KuMk"
+    }
+  ],
+  "Newcastle": [
+    {
+      "name": "Freeman Hospital",
+      "address": "Freeman Rd, High Heaton, Newcastle upon Tyne NE7 7DN, United Kingdom",
+      "location": {
+        "lat": 55.00260189999999,
+        "lng": -1.593423
+      },
+      "rating": 4.4,
+      "place_id": "ChIJuSelXz53fkgRMF0cpaLcfK4"
+    },
+    {
+      "name": "Royal Victoria Infirmary",
+      "address": "Queen Victoria Rd, Newcastle upon Tyne NE1 4LP, United Kingdom",
+      "location": {
+        "lat": 54.9802687,
+        "lng": -1.619727
+      },
+      "rating": 4.2,
+      "place_id": "ChIJObaWmcxwfkgRumfyTs3siPA"
+    },
+    {
+      "name": "Nuffield Health Newcastle-upon-Tyne Hospital",
+      "address": "Clayton Rd, Jesmond, Newcastle upon Tyne NE2 1JP, United Kingdom",
+      "location": {
+        "lat": 54.9866804,
+        "lng": -1.6052921
+      },
+      "rating": 4.3,
+      "place_id": "ChIJz5rCRdpwfkgRhczmkD3AeDM"
+    },
+    {
+      "name": "Queen Elizabeth Hospital",
+      "address": "Queen Elizabeth Ave, Gateshead NE9 6SX, United Kingdom",
+      "location": {
+        "lat": 54.9383334,
+        "lng": -1.5810786
+      },
+      "rating": 3.7,
+      "place_id": "ChIJl8prM256fkgR1k8SRxw4_Lg"
+    },
+    {
+      "name": "North Tyneside General Hospital",
+      "address": "Rake Ln, Tyne and Wear, North Shields NE29 8NH, United Kingdom",
+      "location": {
+        "lat": 55.0254219,
+        "lng": -1.467913
+      },
+      "rating": 4.1,
+      "place_id": "ChIJT3n5EmRufkgRglZWlUDxwkQ"
+    },
+    {
+      "name": "Great North Children's Hospital",
+      "address": "Victoria Wing, Royal Victoria Infirmary, Newcastle upon Tyne NE1 4LP, United Kingdom",
+      "location": {
+        "lat": 54.9796516,
+        "lng": -1.617961
+      },
+      "rating": 4,
+      "place_id": "ChIJAQAA58xwfkgR7BK7UPjf5nk"
+    },
+    {
+      "name": "Newcastle General Hospital",
+      "address": "Newcastle upon Tyne NE4 5NR, United Kingdom",
+      "location": {
+        "lat": 54.9761252,
+        "lng": -1.6447452
+      },
+      "rating": 3.6,
+      "place_id": "ChIJjVJvXj53fkgRuLVhx3dXeLc"
+    }
+  ],
+  "Liverpool": [
+    {
+      "name": "Royal Liverpool University Hospital",
+      "address": "Mount Vernon St, Liverpool L7 8YE, United Kingdom",
+      "location": {
+        "lat": 53.40850880000001,
+        "lng": -2.9631117
+      },
+      "rating": 3.5,
+      "place_id": "ChIJuS_mxxAhe0gRe7vJ4LaOujE"
+    },
+    {
+      "name": "Aintree University Hospital",
+      "address": "Lower Ln, Fazakerley, Liverpool L9 7AL, United Kingdom",
+      "location": {
+        "lat": 53.46568019999999,
+        "lng": -2.933433
+      },
+      "rating": 3.7,
+      "place_id": "ChIJSQGt4UYie0gRPw0aczURKq4"
+    },
+    {
+      "name": "Broadgreen Hospital",
+      "address": "Thomas Dr, Liverpool L14 3LB, United Kingdom",
+      "location": {
+        "lat": 53.4121789,
+        "lng": -2.8986973
+      },
+      "rating": 4.2,
+      "place_id": "ChIJ7W_Fjdkhe0gR6PIqU-CssY4"
+    },
+    {
+      "name": "Spire Liverpool Hospital",
+      "address": "57 Greenbank Rd, Liverpool L18 1HQ, United Kingdom",
+      "location": {
+        "lat": 53.3858072,
+        "lng": -2.9237964
+      },
+      "rating": 3.6,
+      "place_id": "ChIJBeFOwEUge0gR5-xHnrxnVms"
+    },
+    {
+      "name": "Liverpool Women's University Hospital",
+      "address": "Crown St, Liverpool L8 7SS, United Kingdom",
+      "location": {
+        "lat": 53.39904,
+        "lng": -2.9589842
+      },
+      "rating": 3.6,
+      "place_id": "ChIJbR8zdB0he0gRKvQ-qckFc8w"
+    },
+    {
+      "name": "Liverpool Heart and Chest Hospital",
+      "address": "Thomas Dr, Liverpool L14 3PE, United Kingdom",
+      "location": {
+        "lat": 53.4103562,
+        "lng": -2.8994203
+      },
+      "rating": 4.8,
+      "place_id": "ChIJM0ZS4dkhe0gR5xsQNOZ3omM"
+    },
+    {
+      "name": "Liverpool Hospital",
+      "address": "Goulburn St, Liverpool NSW 2170, Australia",
+      "location": {
+        "lat": -33.9198754,
+        "lng": 150.9306417
+      },
+      "rating": 3,
+      "place_id": "ChIJmQj7tOqVEmsRUAjw-Wh9AQ8"
+    },
+    {
+      "name": "Alder Hey Children's Hospital",
+      "address": "E Prescot Rd, Liverpool L14 5AB, United Kingdom",
+      "location": {
+        "lat": 53.4182748,
+        "lng": -2.8960327
+      },
+      "rating": 4,
+      "place_id": "ChIJax_XA94he0gRjq9M9MDJAqM"
+    },
+    {
+      "name": "The Royal London Hospital",
+      "address": "Whitechapel Rd, London E1 1FR, United Kingdom",
+      "location": {
+        "lat": 51.5183701,
+        "lng": -0.0589782
+      },
+      "rating": 3.1,
+      "place_id": "ChIJ69Amvc0cdkgRLNOj6dq9K9k"
+    },
+    {
+      "name": "The Walton Centre",
+      "address": "Lower Ln, Fazakerley, Liverpool L9 7LJ, United Kingdom",
+      "location": {
+        "lat": 53.46643520000001,
+        "lng": -2.9308819
+      },
+      "rating": 4.1,
+      "place_id": "ChIJu80gU8Mje0gRhmhhGuslWqk"
+    },
+    {
+      "name": "Whiston Hospital",
+      "address": "Warrington Rd, Rainhill, Prescot L35 5DR, United Kingdom",
+      "location": {
+        "lat": 53.4209717,
+        "lng": -2.784503
+      },
+      "rating": 3.6,
+      "place_id": "ChIJo_fVXyAce0gRMgKFYUq-JRY"
+    },
+    {
+      "name": "Arrowe Park Hospital",
+      "address": "Arrowe Park Hospital, Arrowe Park Rd, Upton, Birkenhead, Wirral CH49 5PE, United Kingdom",
+      "location": {
+        "lat": 53.369813,
+        "lng": -3.0953283
+      },
+      "rating": 3.6,
+      "place_id": "ChIJn6gb5OAne0gRtKSVqzvXww0"
+    },
+    {
+      "name": "Linda McCartney Centre",
+      "address": "Royal Liverpool And Broadgreen University Hospital, Prescot St, Liverpool L7 8XP, United Kingdom",
+      "location": {
+        "lat": 53.4094265,
+        "lng": -2.9630032
+      },
+      "rating": 4.7,
+      "place_id": "ChIJgXIXKBEhe0gR7H42IBHrLMk"
+    },
+    {
+      "name": "Sefton Suite",
+      "address": "Lower Ln, Fazakerley, Liverpool L9 7AL, United Kingdom",
+      "location": {
+        "lat": 53.4648444,
+        "lng": -2.931207
+      },
+      "rating": 4.5,
+      "place_id": "ChIJtQOWkT8ie0gRYw28QUX0-KY"
+    },
+    {
+      "name": "St Helens Hospital",
+      "address": "Marshalls Cross Rd, Saint Helens WA9 3DA, United Kingdom",
+      "location": {
+        "lat": 53.4395575,
+        "lng": -2.7187803
+      },
+      "rating": 4.3,
+      "place_id": "ChIJjW57nJwce0gRkDfT4AMrPCg"
+    },
+    {
+      "name": "Glan Clwyd Hospital",
+      "address": "Rhuddlan Rd, Bodelwyddan, Rhyl LL18 5UJ, United Kingdom",
+      "location": {
+        "lat": 53.2718079,
+        "lng": -3.4970949
+      },
+      "rating": 3.4,
+      "place_id": "ChIJx7IdOrwoZUgRuu5T93n6STI"
+    },
+    {
+      "name": "Royal Bolton Hospital",
+      "address": "Minerva Rd, Farnworth, Bolton BL4 0JR, United Kingdom",
+      "location": {
+        "lat": 53.5535865,
+        "lng": -2.4303348
+      },
+      "rating": 3.4,
+      "place_id": "ChIJR7bU1cyne0gRz0C_Q2A7wT0"
+    },
+    {
+      "name": "Clatterbridge Hospital",
+      "address": "Clatterbridge Rd, Bebington, Birkenhead, Wirral CH63 4JY, United Kingdom",
+      "location": {
+        "lat": 53.3327713,
+        "lng": -3.0253293
+      },
+      "rating": 4.4,
+      "place_id": "ChIJb6GbGZPYekgR8Yz7d9kf638"
+    },
+    {
+      "name": "Ormskirk District General Hospital",
+      "address": "Dicconson Way, Wigan Rd, Ormskirk L39 2AZ, United Kingdom",
+      "location": {
+        "lat": 53.5643969,
+        "lng": -2.8704894
+      },
+      "rating": 4,
+      "place_id": "ChIJV0OT3AUXe0gROIH3x_8V9x0"
+    },
+    {
+      "name": "Southport and Formby District General Hospital",
+      "address": "Town Lane Kew, Southport PR8 6PN, United Kingdom",
+      "location": {
+        "lat": 53.6346765,
+        "lng": -2.979546
+      },
+      "rating": 3.3,
+      "place_id": "ChIJ12H9Ao0-e0gRKj9L6mIQ_b4"
+    }
+  ],
+  "Bristol": [
+    {
+      "name": "Southmead Hospital",
+      "address": "Southmead Rd, Bristol BS10 5NB, United Kingdom",
+      "location": {
+        "lat": 51.4968176,
+        "lng": -2.5916111
+      },
+      "rating": 4,
+      "place_id": "ChIJefoir_CRcUgRNB9Pl1ai1M8"
+    },
+    {
+      "name": "Bristol Royal Infirmary",
+      "address": "Upper Maudlin St, Bristol BS2 8HW, United Kingdom",
+      "location": {
+        "lat": 51.4589434,
+        "lng": -2.5963016
+      },
+      "rating": 3.5,
+      "place_id": "ChIJEckMiPWRcUgRZclOXV-RixE"
+    },
+    {
+      "name": "University Hospitals Bristol and Weston",
+      "address": "Trust Headquarters, Marlborough St, Bristol BS1 3NU, United Kingdom",
+      "location": {
+        "lat": 51.45905759999999,
+        "lng": -2.5958668
+      },
+      "rating": 4.1,
+      "place_id": "ChIJ6xGwdHaOcUgR70kTgs-OonM"
+    },
+    {
+      "name": "Cossham Hospital",
+      "address": "Lodge Rd, Kingswood, Bristol BS15 1LF, United Kingdom",
+      "location": {
+        "lat": 51.468835,
+        "lng": -2.516515
+      },
+      "rating": 4.7,
+      "place_id": "ChIJjXA2kOyPcUgRcPqjLE6S8Wk"
+    },
+    {
+      "name": "St Michael's Hospital",
+      "address": "Southwell St, Bristol BS2 8EG, United Kingdom",
+      "location": {
+        "lat": 51.4591667,
+        "lng": -2.6
+      },
+      "rating": 4.1,
+      "place_id": "ChIJkcSF1diNcUgRCyjm0CTq0cM"
+    },
+    {
+      "name": "Nuffield Health Bristol Hospital",
+      "address": "3 Clifton Hill, Clifton, Bristol BS8 1BN, United Kingdom",
+      "location": {
+        "lat": 51.453957,
+        "lng": -2.6157157
+      },
+      "rating": 4.1,
+      "place_id": "ChIJpetAsNqNcUgRjU5bUNu-aP8"
+    },
+    {
+      "name": "South Bristol Community Hospital",
+      "address": "Hengrove Promenade, Bristol BS14 0DE, United Kingdom",
+      "location": {
+        "lat": 51.4127377,
+        "lng": -2.5831508
+      },
+      "rating": 3.9,
+      "place_id": "ChIJsZPbX6-OcUgRdrcrWUu4BE8"
+    },
+    {
+      "name": "Bristol Royal Hospital for Children",
+      "address": "Upper Maudlin St, Bristol BS2 8BJ, United Kingdom",
+      "location": {
+        "lat": 51.4578733,
+        "lng": -2.5971828
+      },
+      "rating": 4.1,
+      "place_id": "ChIJgVM_IHaOcUgRT4umk_J4nnQ"
+    },
+    {
+      "name": "Spire Bristol Hospital",
+      "address": "The Glen, Redland Hill, Redland, Bristol BS6 6UT, United Kingdom",
+      "location": {
+        "lat": 51.4721881,
+        "lng": -2.6148051
+      },
+      "rating": 3.5,
+      "place_id": "ChIJ_zOr8u6NcUgRpbV5r5C1mhU"
+    },
+    {
+      "name": "Royal United Hospital",
+      "address": "Combe Park, Bath BA1 3NG, United Kingdom",
+      "location": {
+        "lat": 51.3918072,
+        "lng": -2.3907418
+      },
+      "rating": 3.8,
+      "place_id": "ChIJ85nVZkuBcUgRZgMtXNoVJpU"
+    },
+    {
+      "name": "North Bristol NHS Trust",
+      "address": "Southmead Rd, Bristol BS10 5NB, United Kingdom",
+      "location": {
+        "lat": 51.4982841,
+        "lng": -2.5915971
+      },
+      "rating": 4,
+      "place_id": "ChIJH83_MPeRcUgRuRPw2gtzo9s"
+    },
+    {
+      "name": "Southmead Hospital. Gate 24",
+      "address": "Southmead Rd, Westbury on Trym, Bristol BS10 5NB, United Kingdom",
+      "location": {
+        "lat": 51.4946819,
+        "lng": -2.590685
+      },
+      "rating": 4.9,
+      "place_id": "ChIJAQCt5PqRcUgRex_FRYfzzGM"
+    },
+    {
+      "name": "Southmead Hospital - Brunel building gate 12",
+      "address": "Southmead Hosp, Bristol BS10 5NB, United Kingdom",
+      "location": {
+        "lat": 51.4964411,
+        "lng": -2.5917358
+      },
+      "rating": 4.3,
+      "place_id": "ChIJQ80WIgCRcUgRANV1k_rS0zU"
+    },
+    {
+      "name": "Sulis Hospital Bath",
+      "address": "Foxcote Ave, Peasedown St John, Bath BA2 8SQ, United Kingdom",
+      "location": {
+        "lat": 51.3113232,
+        "lng": -2.4164748
+      },
+      "rating": 4.1,
+      "place_id": "ChIJTcMKqsQpckgRooXFeA8P-bM"
+    },
+    {
+      "name": "Bristol Heart Institute",
+      "address": "Horfield Rd, Bristol BS2 8ED, United Kingdom",
+      "location": {
+        "lat": 51.4596651,
+        "lng": -2.5969923
+      },
+      "rating": 4.4,
+      "place_id": "ChIJtRlPutiNcUgREE0fUtiJ8i4"
+    },
+    {
+      "name": "Bristol Dental Hospital",
+      "address": "Lower Maudlin St, Bristol BS1 2LY, United Kingdom",
+      "location": {
+        "lat": 51.4586272,
+        "lng": -2.5949925
+      },
+      "rating": 3.8,
+      "place_id": "ChIJwcVTR3aOcUgRLsSrpi0OKnk"
+    }
+  ],
+  "Southampton": [
+    {
+      "name": "Southampton General Hospital",
+      "address": "Tremona Rd, Southampton SO16 6YD, United Kingdom",
+      "location": {
+        "lat": 50.9331825,
+        "lng": -1.4344979
+      },
+      "rating": 4.1,
+      "place_id": "ChIJTSsXgDB0dEgRKVU8-RZIx2c"
+    }
+  ],
+  "Oxford": [
+    {
+      "name": "John Radcliffe Hospital",
+      "address": "Headley Way, Headington, Oxford OX3 9DU, United Kingdom",
+      "location": {
+        "lat": 51.7647627,
+        "lng": -1.2221053
+      },
+      "rating": 3.9,
+      "place_id": "ChIJo8eJq9_DdkgRM5-p45OwMIQ"
+    },
+    {
+      "name": "Churchill Hospital",
+      "address": "Old Rd, Headington, Oxford OX3 7LE, United Kingdom",
+      "location": {
+        "lat": 51.7497586,
+        "lng": -1.2161055
+      },
+      "rating": 4.4,
+      "place_id": "ChIJjXpODm_BdkgRC8m4aXMx73Q"
+    },
+    {
+      "name": "Nuffield Health Oxford, The Manor Hospital",
+      "address": "Beech Rd, Headington, Oxford OX3 7RP, United Kingdom",
+      "location": {
+        "lat": 51.760405,
+        "lng": -1.2155386
+      },
+      "rating": 4.1,
+      "place_id": "ChIJQ_InT9XDdkgRZpsG6qUd5Qo"
+    },
+    {
+      "name": "Horton General Hospital",
+      "address": "Oxford Rd, Banbury OX16 9AL, United Kingdom",
+      "location": {
+        "lat": 52.0540309,
+        "lng": -1.3359504
+      },
+      "rating": 4,
+      "place_id": "ChIJizfJq8snd0gR7GRxDssv20E"
+    },
+    {
+      "name": "Nuffield Orthopaedic Centre",
+      "address": "Nuffield Orthopaedic Centre, Windmill Rd, Oxford OX3 7LD, United Kingdom",
+      "location": {
+        "lat": 51.7540877,
+        "lng": -1.2089791
+      },
+      "rating": 4.3,
+      "place_id": "ChIJFXP0JXvBdkgRZRptMR3Xpbw"
+    },
+    {
+      "name": "Warneford Hospital",
+      "address": "Warneford Ln, Headington, Oxford OX3 7JX, United Kingdom",
+      "location": {
+        "lat": 51.7510529,
+        "lng": -1.2219791
+      },
+      "rating": 3.2,
+      "place_id": "ChIJmfE3rULBdkgRev8ZUj2OQA8"
+    },
+    {
+      "name": "City Community Hospital",
+      "address": "Churchill Hospital, Churchill Dr, Headington, Oxford OX3 7LE, United Kingdom",
+      "location": {
+        "lat": 51.74793099999999,
+        "lng": -1.2110545
+      },
+      "rating": 4.2,
+      "place_id": "ChIJt-mOSeDDdkgRs_fQbkaAnSc"
+    }
+  ],
+  "Manchester": [
+    {
+      "name": "Manchester Royal Infirmary",
+      "address": "Oxford Rd, Manchester M13 9WL, United Kingdom",
+      "location": {
+        "lat": 53.4613489,
+        "lng": -2.2247618
+      },
+      "rating": 3.5,
+      "place_id": "ChIJdfaH2o6xe0gR71DjuhnrR9w"
+    },
+    {
+      "name": "Wythenshawe Hospital",
+      "address": "Southmoor Rd, Wythenshawe, Manchester M23 9LT, United Kingdom",
+      "location": {
+        "lat": 53.3889664,
+        "lng": -2.2924616
+      },
+      "rating": 3.7,
+      "place_id": "ChIJL5y4pD2te0gR4KJFjwcoO-8"
+    },
+    {
+      "name": "North Manchester General Hospital",
+      "address": "Delaunays Rd, Crumpsall, Manchester M8 5RB, United Kingdom",
+      "location": {
+        "lat": 53.5174107,
+        "lng": -2.2287712
+      },
+      "rating": 3.1,
+      "place_id": "ChIJ6VFi6kKwe0gRv-fm15WbWO8"
+    },
+    {
+      "name": "St Mary's Hospital",
+      "address": "Royal Infirmary, Oxford Rd, Manchester M13 9WL, United Kingdom",
+      "location": {
+        "lat": 53.461001,
+        "lng": -2.2253729
+      },
+      "rating": 3.8,
+      "place_id": "ChIJeWmh-oixe0gRKlMkyVNnvUc"
+    },
+    {
+      "name": "Spire Manchester Hospital",
+      "address": "170 Barlow Moor Rd, West Didsbury, Manchester M20 2AF, United Kingdom",
+      "location": {
+        "lat": 53.4251113,
+        "lng": -2.2528544
+      },
+      "rating": 4.2,
+      "place_id": "ChIJD6vEgv-te0gRGMhVPRUeBfI"
+    },
+    {
+      "name": "Salford Royal",
+      "address": "Stott Ln, Salford M6 8HD, United Kingdom",
+      "location": {
+        "lat": 53.486262,
+        "lng": -2.3221293
+      },
+      "rating": 3.8,
+      "place_id": "ChIJiZ_A-Pmue0gRDbsavy_DMfQ"
+    },
+    {
+      "name": "Withington Community Hospital",
+      "address": "Nell Ln, West Didsbury, Manchester M20 2LR, United Kingdom",
+      "location": {
+        "lat": 53.4256283,
+        "lng": -2.2447933
+      },
+      "rating": 4.3,
+      "place_id": "ChIJKenk3HGye0gR3EXcy9nEvZw"
+    },
+    {
+      "name": "Trafford General Hospital",
+      "address": "Moorside Rd, Davyhulme, Urmston, Manchester M41 5SL, United Kingdom",
+      "location": {
+        "lat": 53.4537126,
+        "lng": -2.3704263
+      },
+      "rating": 4,
+      "place_id": "ChIJUxUEflWpe0gRp9wkVyqcxxY"
+    },
+    {
+      "name": "The Alexandra Hospital",
+      "address": "Mill Ln, Cheadle SK8 2PX, United Kingdom",
+      "location": {
+        "lat": 53.397048,
+        "lng": -2.2157493
+      },
+      "rating": 4.7,
+      "place_id": "ChIJr3jw1uWye0gRD7iltQS2QGQ"
+    },
+    {
+      "name": "Manchester University NHS Foundation Trust",
+      "address": "Cobbett House Manchester Royal Infirmary, Oxford Rd, Manchester M13 9WL, United Kingdom",
+      "location": {
+        "lat": 53.4607761,
+        "lng": -2.2277175
+      },
+      "rating": 4.1,
+      "place_id": "ChIJS5MvpHate0gRi5_UbvbVMZU"
+    },
+    {
+      "name": "Royal Manchester Children's Hospital",
+      "address": "Oxford Rd, Manchester M13 9WL, United Kingdom",
+      "location": {
+        "lat": 53.4604136,
+        "lng": -2.2246738
+      },
+      "rating": 3.8,
+      "place_id": "ChIJxZKIII-xe0gRnEC-wwXBhE0"
+    },
+    {
+      "name": "Oaklands Hospital",
+      "address": "I B H Oaklands Hospital, 19 Lancaster Rd, Salford M6 8AQ, United Kingdom",
+      "location": {
+        "lat": 53.4917369,
+        "lng": -2.3212151
+      },
+      "rating": 3.7,
+      "place_id": "ChIJFXvLLP-ue0gRWsj-WDM5WaM"
+    },
+    {
+      "name": "Manchester Royal Eye Hospital",
+      "address": "Oxford Rd, Manchester M13 9WL, United Kingdom",
+      "location": {
+        "lat": 53.46131219999999,
+        "lng": -2.2256377
+      },
+      "rating": 3.9,
+      "place_id": "ChIJozH9NImxe0gRi53SI28IcyQ"
+    },
+    {
+      "name": "Manchester Private Hospital",
+      "address": "New Court, Regent Rd, Windsor St, Salford M5 4HB, United Kingdom",
+      "location": {
+        "lat": 53.4789842,
+        "lng": -2.2786366
+      },
+      "rating": 4.3,
+      "place_id": "ChIJqQISOz2ue0gRczP56NAjVoc"
+    },
+    {
+      "name": "Fairfield General Hospital",
+      "address": "Rochdale Old Rd, Bury BL9 7TD, United Kingdom",
+      "location": {
+        "lat": 53.6004438,
+        "lng": -2.2548069
+      },
+      "rating": 3.5,
+      "place_id": "ChIJm_J6zzu7e0gRu0zajyYbgxs"
+    },
+    {
+      "name": "Altrincham Hospital",
+      "address": "15 Railway St, Altrincham WA14 2RQ, United Kingdom",
+      "location": {
+        "lat": 53.3853096,
+        "lng": -2.3511347
+      },
+      "rating": 4,
+      "place_id": "ChIJrQ0dTaKse0gRVLnXRXOKTEQ"
+    },
+    {
+      "name": "Royal Oldham Hospital",
+      "address": "Rochdale Rd, Oldham OL1 2JH, United Kingdom",
+      "location": {
+        "lat": 53.5526618,
+        "lng": -2.1234805
+      },
+      "rating": 3.1,
+      "place_id": "ChIJnQxB7NG5e0gRSw_wE06IS00"
+    },
+    {
+      "name": "Stepping Hill Hospital",
+      "address": "Poplar Grove, Hazel Grove, Stockport SK2 7JE, United Kingdom",
+      "location": {
+        "lat": 53.3844305,
+        "lng": -2.1324865
+      },
+      "rating": 3.6,
+      "place_id": "ChIJ13lai7m0e0gRh7Qw6Oi1LXk"
+    },
+    {
+      "name": "The Pennine Acute HOSPITAL",
+      "address": "North Manchester General Hospital, Delaunays Rd, Crumpsall M8 5RB, United Kingdom",
+      "location": {
+        "lat": 53.51729700000001,
+        "lng": -2.2282699
+      },
+      "rating": 1.7,
+      "place_id": "ChIJTzl9TkOwe0gRIJ3N8w8Oly8"
+    }
+  ],
+  "North Manchester": [
+    {
+      "name": "North Manchester General Hospital",
+      "address": "Delaunays Rd, Crumpsall, Manchester M8 5RB, United Kingdom",
+      "location": {
+        "lat": 53.5174107,
+        "lng": -2.2287712
+      },
+      "rating": 3.1,
+      "place_id": "ChIJ6VFi6kKwe0gRv-fm15WbWO8"
+    }
+  ],
+  "Preston": [
+    {
+      "name": "Royal Preston Hospital",
+      "address": "Sharoe Green Ln, Fulwood, Preston PR2 9HT, United Kingdom",
+      "location": {
+        "lat": 53.79014249999999,
+        "lng": -2.7062085
+      },
+      "rating": 3.4,
+      "place_id": "ChIJB3qUGwNye0gRxqTH5trBdHg"
+    },
+    {
+      "name": "Greater Lancashire Hospital",
+      "address": "D'Urton Ln, Broughton, Preston PR3 5LD, United Kingdom",
+      "location": {
+        "lat": 53.8038829,
+        "lng": -2.7109519
+      },
+      "rating": 4.2,
+      "place_id": "ChIJu8LHVtpze0gR2XGx8KpD4wc"
+    },
+    {
+      "name": "Fulwood Hospital",
+      "address": "Midgery Ln, Fulwood, Preston PR2 9SZ, United Kingdom",
+      "location": {
+        "lat": 53.786328,
+        "lng": -2.68356
+      },
+      "rating": 4.1,
+      "place_id": "ChIJR1-ZiCNye0gRQ3736x8qEP4"
+    }
+  ],
+  "Exeter": [
+    {
+      "name": "Royal Devon and Exeter Hospital",
+      "address": "Barrack Rd, Exeter EX2 5DW, United Kingdom",
+      "location": {
+        "lat": 50.7169427,
+        "lng": -3.5064273
+      },
+      "rating": 4.1,
+      "place_id": "ChIJmVEmNwSkbUgROw5z42PWabI"
+    },
+    {
+      "name": "Royal Devon and Exeter Hospital (Heavitree)",
+      "address": "2 Gladstone Rd, Exeter EX1 2ED, United Kingdom",
+      "location": {
+        "lat": 50.724712,
+        "lng": -3.51437
+      },
+      "rating": 4.4,
+      "place_id": "ChIJmVEmNwSkbUgRc59-LQaxXc8"
+    },
+    {
+      "name": "Wonford Hospital",
+      "address": "Wonford Rd, Exeter EX2 4EQ, United Kingdom",
+      "location": {
+        "lat": 50.7150475,
+        "lng": -3.5063754
+      },
+      "rating": 4.4,
+      "place_id": "ChIJpX5O6QSkbUgRQyQbMvDotV8"
+    },
+    {
+      "name": "Nuffield Health Exeter Hospital",
+      "address": "Wonford Rd, Exeter EX2 4UG, United Kingdom",
+      "location": {
+        "lat": 50.7165346,
+        "lng": -3.5114829
+      },
+      "rating": 4.4,
+      "place_id": "ChIJUUExNhukbUgRao1EAjJOoS0"
+    },
+    {
+      "name": "NHS Nightingale Hospital Exeter",
+      "address": "Osprey Rd, Exeter EX2 7JG, United Kingdom",
+      "location": {
+        "lat": 50.7232825,
+        "lng": -3.4667904
+      },
+      "rating": 4.7,
+      "place_id": "ChIJFY7J3iujbUgRJ765TamB76g"
+    },
+    {
+      "name": "Exeter Community Hospital",
+      "address": "Whipton Hospital, Hospital Ln, Exeter EX1 3RB, United Kingdom",
+      "location": {
+        "lat": 50.7312035,
+        "lng": -3.4840479
+      },
+      "rating": 3.9,
+      "place_id": "ChIJlX9yzuyjbUgRlEsXMq5wVQ8"
+    }
+  ],
+  "Brighton": [
+    {
+      "name": "Royal Sussex County Hospital",
+      "address": "Eastern Rd, Brighton and Hove, Brighton BN2 5BE, United Kingdom",
+      "location": {
+        "lat": 50.81926319999999,
+        "lng": -0.1168915
+      },
+      "rating": 3.6,
+      "place_id": "ChIJ35Cs0riFdUgRzvCv1kPSS3I"
+    },
+    {
+      "name": "Brighton General Hospital",
+      "address": "Brighton and Hove, Brighton BN2 3EW, United Kingdom",
+      "location": {
+        "lat": 50.8310292,
+        "lng": -0.114328
+      },
+      "rating": 4,
+      "place_id": "ChIJeyPHXGOFdUgRUxTtpJO6CHA"
+    }
+  ],
+  "Portsmouth": [
+    {
+      "name": "Queen Alexandra Hospital",
+      "address": "Cosham, Portsmouth PO6 3LY, United Kingdom",
+      "location": {
+        "lat": 50.8497257,
+        "lng": -1.0705618
+      },
+      "rating": 3.8,
+      "place_id": "ChIJW9yNlNlCdEgRSqMk7jPou-Q"
+    },
+    {
+      "name": "Saint Mary's Community Health Campus",
+      "address": "Milton Rd, Milton, Portsmouth PO3 6AD, United Kingdom",
+      "location": {
+        "lat": 50.8002816,
+        "lng": -1.0633325
+      },
+      "rating": 3.9,
+      "place_id": "ChIJBWOhFQBddEgRpMSOXIdCDpY"
+    }
+  ],
+  "Norwich": [
+    {
+      "name": "Norfolk and Norwich University Hospital",
+      "address": "Colney Ln, Norwich NR4 7UY, United Kingdom",
+      "location": {
+        "lat": 52.6172243,
+        "lng": 1.2201537
+      },
+      "rating": 3.9,
+      "place_id": "ChIJKQskYs7g2UcRKqwEfJ5Adfo"
+    }
+  ],
+  "Frimley": [
+    {
+      "name": "Frimley Park Hospital",
+      "address": "Portsmouth Rd, Frimley, Camberley GU16 7UJ, United Kingdom",
+      "location": {
+        "lat": 51.31989919999999,
+        "lng": -0.7420817
+      },
+      "rating": 3.7,
+      "place_id": "ChIJoSZcHzfVdUgR807ssLa0ulU"
+    }
+  ],
+  "Plymouth": [
+    {
+      "name": "Derriford Hospital",
+      "address": "Derriford Rd, Plymouth PL6 8DH, United Kingdom",
+      "location": {
+        "lat": 50.4168332,
+        "lng": -4.1143618
+      },
+      "rating": 3.7,
+      "place_id": "ChIJBUJqDBTtbEgRTbl_7TJcPyI"
+    },
+    {
+      "name": "Mount Gould Hospital",
+      "address": "200 Mount Gould Rd, Plymouth PL4 7QD, United Kingdom",
+      "location": {
+        "lat": 50.37898939999999,
+        "lng": -4.111707
+      },
+      "rating": 4.2,
+      "place_id": "ChIJ23QYRJXsbEgRB687s-gOQ1w"
+    },
+    {
+      "name": "NHS Plymouth",
+      "address": "1 Derriford Park, Plymouth PL6 5QZ, United Kingdom",
+      "location": {
+        "lat": 50.4170885,
+        "lng": -4.1135607
+      },
+      "rating": 4.5,
+      "place_id": "ChIJFfr5kj7tbEgRp3C0Bt5-NlA"
+    },
+    {
+      "name": "Nuffield Health Plymouth Hospital",
+      "address": "Derriford Rd, Plymouth PL6 8BG, United Kingdom",
+      "location": {
+        "lat": 50.4185242,
+        "lng": -4.1145761
+      },
+      "rating": 4.5,
+      "place_id": "ChIJgaD7CxXtbEgRWuy6LhDcy2w"
+    },
+    {
+      "name": "Practice Plus Group Hospital, Plymouth",
+      "address": "20 Brest Rd, Plymouth PL6 5XP, United Kingdom",
+      "location": {
+        "lat": 50.4125519,
+        "lng": -4.1186704
+      },
+      "rating": 4.3,
+      "place_id": "ChIJo3gztRftbEgROcax9wRC0pk"
+    }
+  ],
+  "Canterbury": [
+    {
+      "name": "Kent and Canterbury Hospital",
+      "address": "Ethelbert Rd, Canterbury CT1 3NG, United Kingdom",
+      "location": {
+        "lat": 51.2662051,
+        "lng": 1.0866394
+      },
+      "rating": 4.1,
+      "place_id": "ChIJR6A2-C3K3kcRiXhC0AacyH4"
+    },
+    {
+      "name": "Chaucer Hospital",
+      "address": "Nackington Rd, Canterbury CT4 7AR, United Kingdom",
+      "location": {
+        "lat": 51.26180429999999,
+        "lng": 1.0875734
+      },
+      "rating": 4.9,
+      "place_id": "ChIJqbtuYinK3kcR4t_syjgRohM"
+    },
+    {
+      "name": "St Martin's Hospital",
+      "address": "Littlebourne Rd, Canterbury CT1 1TD, United Kingdom",
+      "location": {
+        "lat": 51.2772751,
+        "lng": 1.1092497
+      },
+      "rating": 3.3,
+      "place_id": "ChIJld_YExXK3kcRMX9_I-q5jGc"
+    }
+  ],
+  "Aylesbury": [
+    {
+      "name": "Stoke Mandeville Hospital",
+      "address": "Mandeville Rd, Aylesbury HP21 8AL, United Kingdom",
+      "location": {
+        "lat": 51.7984836,
+        "lng": -0.8009588999999999
+      },
+      "rating": 3.1,
+      "place_id": "ChIJAxD1r1b2dkgRJjvEwSF1RcA"
+    },
+    {
+      "name": "The Royal Buckinghamshire Hospital",
+      "address": "Buckingham Rd, Aylesbury HP19 9AB, United Kingdom",
+      "location": {
+        "lat": 51.8206171,
+        "lng": -0.8160136
+      },
+      "rating": 4.6,
+      "place_id": "ChIJi1FMFAr3dkgRLXYiY7w8FMk"
+    }
+  ],
+  "Luton": [
+    {
+      "name": "Luton & Dunstable University Hospital",
+      "address": "NHS Foundation Trust, The L&D Hospital, Lewsey Rd, Luton LU4 0DZ, United Kingdom",
+      "location": {
+        "lat": 51.8947933,
+        "lng": -0.4746371
+      },
+      "rating": 3.1,
+      "place_id": "ChIJn93bJytJdkgR1KWKRyOohpc"
+    }
+  ],
+  "Ipswich": [
+    {
+      "name": "Ipswich Hospital",
+      "address": "Heath Rd, Ipswich IP4 5PD, United Kingdom",
+      "location": {
+        "lat": 52.0579338,
+        "lng": 1.1980849
+      },
+      "rating": 3.8,
+      "place_id": "ChIJLxrr5qef2UcR7GyjU5oc-Js"
+    },
+    {
+      "name": "Ipswich Hospital",
+      "address": "Chelmsford Ave, Ipswich QLD 4305, Australia",
+      "location": {
+        "lat": -27.6193096,
+        "lng": 152.7592757
+      },
+      "rating": 2.8,
+      "place_id": "ChIJ1d0U1Uu0lmsR2QYDGpTQoso"
+    },
+    {
+      "name": "Nuffield Health Ipswich Hospital",
+      "address": "Foxhall Rd, Ipswich IP4 5SW, United Kingdom",
+      "location": {
+        "lat": 52.04763999999999,
+        "lng": 1.2288801
+      },
+      "rating": 4.3,
+      "place_id": "ChIJMyDCqFye2UcRP6M5UOo7nBM"
+    }
+  ],
+  "Peterborough": [
+    {
+      "name": "Peterborough City Hospital",
+      "address": "Edith Cavell Campus, Bretton Gate, Peterborough PE3 9GZ, United Kingdom",
+      "location": {
+        "lat": 52.5843779,
+        "lng": -0.2781018
+      },
+      "rating": 3.4,
+      "place_id": "ChIJWcn11m_xd0gR68KOf_HGLHE"
+    }
+  ],
+  "Basingstoke": [
+    {
+      "name": "Basingstoke and North Hampshire Hospital",
+      "address": "Aldermaston Rd, Basingstoke RG24 9NA, United Kingdom",
+      "location": {
+        "lat": 51.2802038,
+        "lng": -1.1110703
+      },
+      "rating": 3.8,
+      "place_id": "ChIJozDI7cEhdEgRPpd_rlNZISM"
+    }
+  ],
+  "Milton Keynes": [
+    {
+      "name": "Milton Keynes University Hospital",
+      "address": "Standing Wy, Eaglestone, Milton Keynes MK6 5LD, United Kingdom",
+      "location": {
+        "lat": 52.02616500000001,
+        "lng": -0.7372004
+      },
+      "rating": 3.2,
+      "place_id": "ChIJiY29Zdaqd0gREZqFse1LrLo"
+    }
+  ],
+  "Torquay": [
+    {
+      "name": "Torbay Hospital",
+      "address": "Newton Rd, Torquay TQ2 7AA, United Kingdom",
+      "location": {
+        "lat": 50.4819889,
+        "lng": -3.5535941
+      },
+      "rating": 3.9,
+      "place_id": "ChIJrawHYI0PbUgR7-XH8gYZJHk"
+    }
+  ],
+  "Winchester": [
+    {
+      "name": "Royal Hampshire County Hospital",
+      "address": "Romsey Rd, Winchester SO22 5DG, United Kingdom",
+      "location": {
+        "lat": 51.0611905,
+        "lng": -1.3299212
+      },
+      "rating": 3.9,
+      "place_id": "ChIJC37ypsUNdEgR-WlZyALTS8A"
+    },
+    {
+      "name": "Sarum Road Hospital Winchester",
+      "address": "Sarum Rd, Winchester SO22 5HA, United Kingdom",
+      "location": {
+        "lat": 51.0613489,
+        "lng": -1.3401972
+      },
+      "rating": 4.9,
+      "place_id": "ChIJlwom97sNdEgRCeNzTvCeicA"
+    }
+  ]
+}
