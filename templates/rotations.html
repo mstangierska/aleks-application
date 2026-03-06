@@ -860,6 +860,10 @@
                         <input type="checkbox" id="showHospitals" onchange="toggleHospitals()" checked>
                         Show Hospitals
                     </label>
+                    <label title="Automatically update the rotation list to show only rotations visible in the current map view">
+                        <input type="checkbox" id="filterAsIMove" onchange="toggleFilterAsIMove()" checked>
+                        Filter as I move the map
+                    </label>
                 </div>
                 <div class="commute-info" id="commuteInfo">
                     <div class="commute-info-header">
@@ -1204,6 +1208,23 @@
                 }
             });
 
+            // Add map move/zoom handlers for "Filter as I move" feature
+            map.on('moveend', function() {
+                const filterAsIMoveEnabled = document.getElementById('filterAsIMove').checked;
+                if (filterAsIMoveEnabled) {
+                    console.log('🗺️ Map moved - filtering visible rotations');
+                    filterRotationsByVisibleArea();
+                }
+            });
+
+            map.on('zoomend', function() {
+                const filterAsIMoveEnabled = document.getElementById('filterAsIMove').checked;
+                if (filterAsIMoveEnabled) {
+                    console.log('🔍 Map zoomed - filtering visible rotations');
+                    filterRotationsByVisibleArea();
+                }
+            });
+
             loadData();
         }
 
@@ -1244,7 +1265,7 @@
                                    name !== 'tba';
                         });
                         
-                        console.log(`Loaded ${hospitalsData.length} hospitals (filtered ${allHospitals.length - hospitalsData.length} generic entries)`);
+                        console.log(`Loaded ${hospitalsData.length} hospitals from hospitals_extended (filtered ${allHospitals.length - hospitalsData.length} generic entries)`);
                         if (allHospitals.length > hospitalsData.length) {
                             console.log('Filtered out:', allHospitals
                                 .filter(h => !hospitalsData.includes(h))
@@ -1253,6 +1274,70 @@
                     }
                 } catch (e) {
                     console.log('Hospitals data not available:', e);
+                }
+                
+                // Load location hospital mapping (from Google Places API) and merge
+                try {
+                    const mappingResponse = await fetch(`${apiBase}/api/location_hospital_mapping`);
+                    if (mappingResponse.ok) {
+                        const locationMapping = await mappingResponse.json();
+                        
+                        // Extract all unique hospitals from the mapping
+                        const mappingHospitals = [];
+                        const seenHospitals = new Set();
+                        
+                        Object.values(locationMapping).forEach(hospitals => {
+                            hospitals.forEach(h => {
+                                // Create unique key based on name and coordinates
+                                const key = `${h.name}|${h.location.lat.toFixed(6)}|${h.location.lng.toFixed(6)}`;
+                                
+                                if (!seenHospitals.has(key)) {
+                                    seenHospitals.add(key);
+                                    
+                                    // Convert to same format as hospitals_extended
+                                    mappingHospitals.push({
+                                        hospital_name: h.name,
+                                        name: h.vicinity || h.address,
+                                        region: h.vicinity || '',
+                                        lat: h.location.lat,
+                                        lon: h.location.lng,
+                                        google_rating: h.rating || 0,
+                                        source: 'google_places'
+                                    });
+                                }
+                            });
+                        });
+                        
+                        console.log(`Loaded ${mappingHospitals.length} unique hospitals from location mapping`);
+                        
+                        // Merge with existing hospitals (avoid duplicates)
+                        const existingKeys = new Set(hospitalsData.map(h => 
+                            `${h.hospital_name}|${h.lat.toFixed(6)}|${h.lon.toFixed(6)}`
+                        ));
+                        
+                        let addedCount = 0;
+                        mappingHospitals.forEach(h => {
+                            const key = `${h.hospital_name}|${h.lat.toFixed(6)}|${h.lon.toFixed(6)}`;
+                            if (!existingKeys.has(key)) {
+                                hospitalsData.push(h);
+                                addedCount++;
+                            }
+                        });
+                        
+                        console.log(`Merged hospitals: ${addedCount} new hospitals added from mapping`);
+                        console.log(`Total hospitals available: ${hospitalsData.length}`);
+                        
+                        // Log Queen Elizabeth hospitals for debugging
+                        const qeHospitals = hospitalsData.filter(h => 
+                            h.hospital_name.toLowerCase().includes('queen elizabeth')
+                        );
+                        console.log(`Found ${qeHospitals.length} Queen Elizabeth hospitals:`);
+                        qeHospitals.forEach(h => {
+                            console.log(`  • ${h.hospital_name} at (${h.lat.toFixed(4)}, ${h.lon.toFixed(4)})`);
+                        });
+                    }
+                } catch (e) {
+                    console.log('Location hospital mapping not available:', e);
                 }
                 
                 populateFilters();
@@ -1317,9 +1402,9 @@
                 excludeSelect.appendChild(option);
             });
             
-            // Set Haematology and London as default filters
+            // Set Haematology as default filter (removed London default)
             document.getElementById('specialtyFilter').value = 'Haematology';
-            document.getElementById('regionFilter').value = 'London';
+            // document.getElementById('regionFilter').value = 'London'; // REMOVED - no default location
         }
 
         function populateSelect(id, options) {
@@ -1380,8 +1465,17 @@
             });
 
             updateMap();
-            updateSidebar();
-            updateStats();
+            
+            // Check if "Filter as I move" is enabled
+            const filterAsIMoveEnabled = document.getElementById('filterAsIMove')?.checked;
+            if (filterAsIMoveEnabled && map) {
+                // Use map-based filtering instead of regular sidebar update
+                filterRotationsByVisibleArea();
+            } else {
+                // Use regular sidebar update
+                updateSidebar();
+                updateStats();
+            }
         }
         
         function clearFilters() {
@@ -1430,7 +1524,7 @@
             
             // Reset filters to defaults
             document.getElementById('specialtyFilter').value = 'Haematology'; // Reset to default Haematology
-            document.getElementById('regionFilter').value = 'London'; // Reset to default London
+            // document.getElementById('regionFilter').value = 'London'; // REMOVED - no default location
             document.getElementById('locationFilter').value = '';
             document.getElementById('ratingFilter').value = '';
             document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1; // Clear all selections
@@ -1611,7 +1705,8 @@
             
             if (hospitalNames.length === 0) {
                 console.log('⚠️ No hospitals extracted from description, trying location match...');
-                // If no specific hospitals found, try to match with location
+                
+                // First, try to match with location in hospital database
                 const locationHospitals = hospitalsData.filter(h => 
                     h.name === rotation.location_name || 
                     h.hospital_name.toLowerCase() === rotation.location_name.toLowerCase()
@@ -1628,6 +1723,27 @@
                         foundHospitalIds.add(hospital.hospital_name);
                     }
                 });
+                
+                // If still no hospitals found, place a marker at the rotation's city center
+                if (foundHospitals.length === 0 && rotation.lat && rotation.lon) {
+                    console.log('📌 No specific hospitals found, placing marker at city center:', rotation.location_name);
+                    
+                    // Create a generic city/location marker using rotation coordinates
+                    const cityMarker = {
+                        hospital_name: rotation.location_name,
+                        name: rotation.location_name,
+                        region: rotation.region,
+                        lat: rotation.lat,
+                        lon: rotation.lon,
+                        google_rating: rotation.google_rating
+                    };
+                    
+                    addHospitalMarker(cityMarker, rotation, true); // Mark as main
+                    foundHospitals.push(cityMarker);
+                    foundHospitalIds.add(cityMarker.hospital_name);
+                    
+                    console.log(`  ✅ Added city center marker: ${rotation.location_name} (${rotation.lat}, ${rotation.lon})`);
+                }
             } else {
                 console.log('🔎 Matching extracted names with hospital database...');
                 // Match extracted names with hospital data
@@ -1775,6 +1891,27 @@
                     console.log('💡 Extracted names:', hospitalNames);
                     console.log('💡 These hospitals may need to be added to the database');
                 }
+            }
+            
+            // FINAL FALLBACK: If still no hospitals found, place a marker at city center
+            if (foundHospitals.length === 0 && rotation.lat && rotation.lon) {
+                console.log('📌 FINAL FALLBACK: Placing marker at city/location center');
+                
+                // Create a generic city/location marker using rotation coordinates
+                const cityMarker = {
+                    hospital_name: rotation.location_name + ' (Location)',
+                    name: rotation.location_name,
+                    region: rotation.region,
+                    lat: rotation.lat,
+                    lon: rotation.lon,
+                    google_rating: rotation.google_rating
+                };
+                
+                addHospitalMarker(cityMarker, rotation, true); // Mark as main
+                foundHospitals.push(cityMarker);
+                foundHospitalIds.add(cityMarker.hospital_name);
+                
+                console.log(`  ✅ Added city center marker: ${rotation.location_name} (${rotation.lat}, ${rotation.lon})`);
             }
             
             if (foundHospitals.length === 0) {
@@ -1934,17 +2071,16 @@
                     console.log('📐 Extended bounds to include full rotation circle (all corners)');
                 }
                 
-                // Don't auto-zoom when showing hospitals - keep current map view
+                // Auto-zoom to show hospitals and rotation area
                 // Fit map to show everything with good padding
                 // Use setTimeout to ensure all layers are rendered before zooming
-                // setTimeout(() => {
-                //     map.fitBounds(bounds, { 
-                //         padding: [100, 100],
-                //         maxZoom: 11  // Don't zoom in too close
-                //     });
-                //     console.log('🔍 Map zoomed to show rotation + hospitals + complete circle');
-                // }, 100); // Small delay to ensure rendering is complete
-                console.log('🔍 Hospitals displayed at current zoom level (no auto-zoom)');
+                setTimeout(() => {
+                    map.fitBounds(bounds, { 
+                        padding: [100, 100],
+                        maxZoom: 12  // Don't zoom in too close for single markers
+                    });
+                    console.log('🔍 Map zoomed to show rotation + hospitals + complete circle');
+                }, 100); // Small delay to ensure rendering is complete
             } else {
                 console.log('⚠️ No hospital markers to display - hospitals not in database');
             }
@@ -1956,68 +2092,109 @@
         function extractHospitalNames(description, area) {
             const hospitals = new Set();
             
-            // Map NHS Trust names to their actual hospitals
-            const trustToHospitalMap = {
-                'Royal Free London NHS Foundation Trust': ['Royal Free Hospital'],
-                'Imperial College Healthcare NHS Trust': ['Charing Cross Hospital', 'Hammersmith Hospital', 'St Mary\'s Hospital'],
-                'London North West University Healthcare NHS Trust': ['Northwick Park Hospital', 'Ealing Hospital'],
-                'University College London Hospitals NHS Foundation Trust': ['University College Hospital'],
-                'Guy\'s and St Thomas\' NHS Foundation Trust': ['Guy\'s Hospital', 'St Thomas\' Hospital'],
-                'King\'s College Hospital NHS Foundation Trust': ['King\'s College Hospital'],
-                'Barts Health NHS Trust': ['The Royal London Hospital', 'St Bartholomew\'s Hospital', 'Whipps Cross Hospital'],
-                'Lewisham and Greenwich NHS Trust': ['Lewisham Hospital', 'Queen Elizabeth Hospital'],
-                'Epsom and St Helier University Hospitals NHS Trust': ['Epsom Hospital', 'St Helier Hospital'],
-                'Barking, Havering and Redbridge University Hospitals NHS Trust': ['Queen\'s Hospital', 'King George Hospital'],
-                'Buckinghamshire Healthcare NHS Trust': ['Stoke Mandeville Hospital']
-            };
-            
-            // Check for NHS Trust names and add their hospitals
-            for (const [trustName, hospitalList] of Object.entries(trustToHospitalMap)) {
-                if (description.includes(trustName)) {
-                    hospitalList.forEach(h => hospitals.add(h));
-                }
+            if (!description || !description.trim()) {
+                return [];
             }
             
-            // Specific hospital patterns - only match actual hospital names
-            const hospitalPatterns = [
-                /([A-Z][a-zA-Z\s&']+Hospital)/g,
-                /([A-Z][a-zA-Z\s]+Infirmary)/g,
-                /(Royal [A-Z][a-zA-Z\s]+Hospital)/g,
-                /(St\.?\s+[A-Z][a-zA-Z\s']+Hospital)/gi,
-                /(The [A-Z][a-zA-Z\s]+Hospital)/g
-            ];
+            // Get all known hospital names from our database
+            const knownHospitals = hospitalsData.map(h => h.hospital_name).filter(name => name && name.length > 5);
             
-            // Extract from description
-            hospitalPatterns.forEach(pattern => {
-                const matches = description.matchAll(pattern);
-                for (const match of matches) {
-                    let name = match[1].trim();
+            // Sort by length (longest first) to match longer names before shorter ones
+            // This ensures "Queen Elizabeth Hospital Birmingham" is matched before "Queen Elizabeth Hospital"
+            const sortedHospitals = knownHospitals.sort((a, b) => b.length - a.length);
+            
+            // Track which character positions are already matched to avoid overlaps
+            const matchedRanges = [];
+            
+            sortedHospitals.forEach(hospitalName => {
+                // Escape special regex characters in hospital name
+                const escapedName = hospitalName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                
+                // Create regex with word boundaries
+                const regex = new RegExp(`\\b${escapedName}\\b`, 'gi');
+                
+                let match;
+                while ((match = regex.exec(description)) !== null) {
+                    const start = match.index;
+                    const end = start + match[0].length;
                     
-                    // Clean up the name
-                    name = name.replace(/\s+/g, ' '); // Remove extra spaces
+                    // Check if this range overlaps with any existing match
+                    const overlaps = matchedRanges.some(range => 
+                        (start >= range.start && start < range.end) || 
+                        (end > range.start && end <= range.end) ||
+                        (start <= range.start && end >= range.end)
+                    );
                     
-                    // Skip if it contains NHS Trust organization text
-                    if (/NHS Trust|Foundation Trust|Healthcare NHS|University Healthcare/i.test(name)) continue;
-                    
-                    // Skip if too short or contains other unwanted text
-                    if (name.length < 5) continue;
-                    if (/Acute|internal|Medicine|Training|Programme/i.test(name)) continue;
-                    
-                    hospitals.add(name);
+                    if (!overlaps) {
+                        matchedRanges.push({ start, end });
+                        hospitals.add(hospitalName); // Use the canonical name from database
+                    }
                 }
             });
             
-            // Remove duplicates and subsets (e.g., if we have both "Park Hospital" and "Northwick Park Hospital", keep the longer one)
-            const hospitalArray = Array.from(hospitals);
-            const filtered = hospitalArray.filter((name, index) => {
-                // Check if this name is a substring of any other name
-                const isSubset = hospitalArray.some((other, otherIndex) => 
-                    otherIndex !== index && other.includes(name) && other.length > name.length
-                );
-                return !isSubset;
+            console.log(`🏥 Extracted ${hospitals.size} hospitals from description:`, Array.from(hospitals));
+            return Array.from(hospitals);
+        }
+
+        // Highlight hospitals in description text
+        function highlightHospitalsInDescription(description) {
+            if (!description || !description.trim()) {
+                return description;
+            }
+            
+            let highlighted = description;
+            
+            // Get all known hospital names from our database
+            const knownHospitals = hospitalsData.map(h => h.hospital_name).filter(name => name && name.length > 5);
+            
+            // Sort by length (longest first) to match longer names before shorter ones
+            // This ensures "Queen Elizabeth Hospital Birmingham" is matched before "Queen Elizabeth Hospital"
+            const sortedHospitals = knownHospitals.sort((a, b) => b.length - a.length);
+            
+            // Track which character positions are already highlighted to avoid overlaps
+            const highlightedRanges = [];
+            
+            sortedHospitals.forEach(hospitalName => {
+                // Escape special regex characters in hospital name
+                const escapedName = hospitalName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                
+                // Create regex with word boundaries
+                const regex = new RegExp(`\\b${escapedName}\\b`, 'gi');
+                
+                let match;
+                while ((match = regex.exec(description)) !== null) {
+                    const start = match.index;
+                    const end = start + match[0].length;
+                    
+                    // Check if this range overlaps with any existing highlight
+                    const overlaps = highlightedRanges.some(range => 
+                        (start >= range.start && start < range.end) || 
+                        (end > range.start && end <= range.end) ||
+                        (start <= range.start && end >= range.end)
+                    );
+                    
+                    if (!overlaps) {
+                        highlightedRanges.push({ start, end, name: match[0] });
+                    }
+                }
             });
             
-            return filtered;
+            // Sort ranges by position (start descending) to replace from end to beginning
+            // This preserves character positions
+            highlightedRanges.sort((a, b) => b.start - a.start);
+            
+            // Apply highlights from end to beginning to preserve positions
+            highlightedRanges.forEach(range => {
+                const before = description.substring(0, range.start);
+                const match = description.substring(range.start, range.end);
+                const after = description.substring(range.end);
+                
+                description = before + 
+                    `<mark style="background-color: #fef3c7; padding: 2px 4px; border-radius: 3px; font-weight: 600; color: #92400e;">${match}</mark>` +
+                    after;
+            });
+            
+            return description;
         }
 
         // Add a hospital marker to the map
@@ -2225,10 +2402,12 @@
             
             let descriptionInfo = '';
             if (rotation.description && rotation.description.trim()) {
+                // Highlight hospitals in the description
+                const highlightedDescription = highlightHospitalsInDescription(rotation.description);
                 descriptionInfo = `
                     <div class="commute-item">
                         <div class="commute-mode">Description</div>
-                        <div style="font-size: 0.85em; line-height: 1.6; color: #475569; white-space: pre-wrap;">${rotation.description}</div>
+                        <div style="font-size: 0.85em; line-height: 1.6; color: #475569; white-space: pre-wrap;">${highlightedDescription}</div>
                     </div>
                 `;
             }
@@ -2365,6 +2544,95 @@
             }
         }
 
+        // Toggle "Filter as I move" feature
+        function toggleFilterAsIMove() {
+            const enabled = document.getElementById('filterAsIMove').checked;
+            
+            if (enabled) {
+                console.log('✅ Filter as I move: ENABLED');
+                // Apply filtering immediately
+                filterRotationsByVisibleArea();
+            } else {
+                console.log('❌ Filter as I move: DISABLED');
+                // Restore all filtered rotations (based on sidebar filters)
+                applyFilters();
+            }
+        }
+
+        // Filter rotations by visible map area
+        function filterRotationsByVisibleArea() {
+            if (!map || filteredRotations.length === 0) {
+                console.log('⚠️ Cannot filter: map not ready or no rotations');
+                return;
+            }
+
+            const bounds = map.getBounds();
+            console.log('📐 Filtering by map bounds:', {
+                north: bounds.getNorth().toFixed(4),
+                south: bounds.getSouth().toFixed(4),
+                east: bounds.getEast().toFixed(4),
+                west: bounds.getWest().toFixed(4)
+            });
+
+            // Filter rotations to only those within visible bounds
+            const visibleRotations = filteredRotations.filter(rotation => {
+                if (rotation.lat && rotation.lon) {
+                    return bounds.contains([rotation.lat, rotation.lon]);
+                }
+                return false;
+            });
+
+            console.log(`📍 Found ${visibleRotations.length} rotations in visible area (out of ${filteredRotations.length} filtered)`);
+
+            // Update the sidebar to show only visible rotations
+            const rotationList = document.getElementById('rotationList');
+            const titleElement = document.getElementById('sidebarTitle');
+            
+            if (!rotationList || !titleElement) {
+                console.error('Sidebar elements not found');
+                return;
+            }
+
+            // Update title with visible count
+            titleElement.textContent = `${visibleRotations.length} Rotation${visibleRotations.length !== 1 ? 's' : ''} in View`;
+
+            if (visibleRotations.length === 0) {
+                rotationList.innerHTML = '<div class="no-results">No rotations in current map view. Zoom out or pan to see more.</div>';
+                updateStats(0);
+                return;
+            }
+
+            // Use the same card format as normal sidebar
+            rotationList.innerHTML = visibleRotations.map(rotation => {
+                const specialties = getSpecialties(rotation);
+                const isSelected = selectedRotation && selectedRotation.id === rotation.id;
+
+                return `
+                    <div class="rotation-card ${isSelected ? 'selected' : ''}" onclick="selectRotation(${rotation.id})">
+                        <div class="rotation-name">${rotation.preference || rotation.programme_name}</div>
+                        <div class="rotation-details">
+                            <div class="rotation-detail-row">
+                                <span class="detail-label">📍 Location:</span> ${rotation.location_name}
+                            </div>
+                            <div class="rotation-detail-row">
+                                <span class="detail-label">🗺️ Region:</span> ${rotation.region}
+                            </div>
+                            <div class="rotation-detail-row">
+                                <span class="rating-badge">⭐ ${rotation.google_rating.toFixed(1)}</span>
+                                <span style="margin-left: 8px; color: #64748b;">📅 ${rotation.duration_months}mo • 👥 ${rotation.places_available} ${rotation.places_available !== 1 ? 'places' : 'place'}</span>
+                            </div>
+                            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
+                                ${specialties.map(s => `<span class="spec-badge">${s}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Update stats to reflect visible count
+            updateStats(visibleRotations.length);
+        }
+
         // Clear selection and hospital markers
         function clearSelection() {
             selectedRotation = null;
@@ -2392,14 +2660,119 @@
             
             updateSidebar();
             
-            // Zoom back to all filtered rotations
-            if (filteredRotations.length > 0 && markersLayer.getBounds().isValid()) {
-                map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
+            // Show rotations and hospitals in the current visible area
+            showRotationsInVisibleArea();
+        }
+        
+        // Show all rotations and hospitals in the currently visible map area
+        function showRotationsInVisibleArea() {
+            console.log('🗺️ Showing rotations in visible area...');
+            
+            // Get current map bounds
+            const bounds = map.getBounds();
+            console.log('📐 Current map bounds:', bounds);
+            
+            // Filter rotations within visible bounds
+            const visibleRotations = filteredRotations.filter(rotation => {
+                if (rotation.lat && rotation.lon) {
+                    return bounds.contains([rotation.lat, rotation.lon]);
+                }
+                return false;
+            });
+            
+            console.log(`📍 Found ${visibleRotations.length} rotations in visible area`);
+            
+            // Clear existing markers
+            markersLayer.clearLayers();
+            
+            // Add markers for visible rotations
+            visibleRotations.forEach(rotation => {
+                const marker = L.marker([rotation.lat, rotation.lon], {
+                    icon: L.divIcon({
+                        html: `<div style="background: ${rotation.has_haematology ? '#7c3aed' : '#a855f7'}; 
+                                color: white; border-radius: 50%; width: 12px; height: 12px; 
+                                border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                        iconSize: [12, 12],
+                        className: 'custom-marker'
+                    })
+                });
+
+                const specialties = getSpecialties(rotation);
+                marker.bindPopup(`
+                    <div class="popup-content">
+                        <div class="popup-title">${rotation.preference || rotation.programme_name}</div>
+                        <div class="popup-detail"><strong>Location:</strong> ${rotation.location_name}</div>
+                        <div class="popup-detail"><strong>Region:</strong> ${rotation.region}</div>
+                        <div class="popup-detail"><strong>Rating:</strong> ⭐ ${rotation.google_rating.toFixed(1)}</div>
+                        <div class="popup-detail"><strong>Duration:</strong> ${rotation.duration_months} months</div>
+                        <div class="popup-detail"><strong>Places:</strong> ${rotation.places_available}</div>
+                        ${specialties.length > 0 ? `<div class="popup-detail"><strong>Specialties:</strong> ${specialties.join(', ')}</div>` : ''}
+                    </div>
+                `);
+
+                marker.on('click', () => {
+                    showRotationDetails(rotation);
+                });
+
+                markersLayer.addLayer(marker);
+            });
+            
+            // Show hospitals in visible area if checkbox is enabled
+            const showHospitals = document.getElementById('showHospitals').checked;
+            if (showHospitals) {
+                showHospitalsInVisibleArea(bounds);
             }
+            
+            console.log(`✅ Displayed ${visibleRotations.length} rotations in current view`);
+        }
+        
+        // Show hospitals in the currently visible map area
+        function showHospitalsInVisibleArea(bounds) {
+            console.log('🏥 Showing hospitals in visible area...');
+            
+            // Filter hospitals within visible bounds
+            const visibleHospitals = hospitalsData.filter(hospital => {
+                if (hospital.lat && hospital.lon) {
+                    return bounds.contains([hospital.lat, hospital.lon]);
+                }
+                return false;
+            });
+            
+            console.log(`📍 Found ${visibleHospitals.length} hospitals in visible area`);
+            
+            // Add hospital markers (if not already in rotation-specific view)
+            if (!selectedRotation) {
+                visibleHospitals.forEach(hospital => {
+                    const marker = L.marker([hospital.lat, hospital.lon], {
+                        icon: L.divIcon({
+                            html: `<div style="background: #ef4444; color: white; border-radius: 50%; 
+                                    width: 18px; height: 18px; border: 3px solid white; 
+                                    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+                                    display: flex; align-items: center; justify-content: center;
+                                    font-size: 12px;">🏥</div>`,
+                            iconSize: [18, 18],
+                            className: 'hospital-marker'
+                        })
+                    });
+
+                    marker.bindPopup(`
+                        <div class="popup-content">
+                            <div class="popup-title">🏥 ${hospital.hospital_name}</div>
+                            <div class="popup-detail"><strong>Location:</strong> ${hospital.name}</div>
+                            <div class="popup-detail"><strong>Region:</strong> ${hospital.region}</div>
+                            <div class="popup-detail"><strong>Rating:</strong> ⭐ ${hospital.google_rating.toFixed(1)}</div>
+                        </div>
+                    `);
+
+                    markersLayer.addLayer(marker);
+                });
+            }
+            
+            console.log(`✅ Displayed ${visibleHospitals.length} hospitals in current view`);
         }
 
         // Update statistics
-        function updateStats() {
+        function updateStats(customDisplayCount = null) {
             const totalRotationsEl = document.getElementById('totalRotations');
             const displayedRotationsEl = document.getElementById('displayedRotations');
             const avgRatingEl = document.getElementById('avgRating');
@@ -2411,7 +2784,11 @@
             }
             
             totalRotationsEl.textContent = allRotations.length;
-            displayedRotationsEl.textContent = filteredRotations.length;
+            
+            // Use custom count if provided (for "filter as I move" feature)
+            // Otherwise use filteredRotations length
+            const displayCount = customDisplayCount !== null ? customDisplayCount : filteredRotations.length;
+            displayedRotationsEl.textContent = displayCount;
             
             const avgRating = filteredRotations.length > 0
                 ? (filteredRotations.reduce((sum, r) => sum + r.google_rating, 0) / filteredRotations.length).toFixed(1)
