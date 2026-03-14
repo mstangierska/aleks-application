@@ -735,10 +735,32 @@
                 <button class="close-panel-btn" onclick="toggleFiltersPanel()">✕</button>
             </div>
             <div class="filter-group">
-                <label>Specialization</label>
-                <select id="specialtyFilter">
-                    <option value="">All Specializations</option>
+                <label>Search by Rotation Code</label>
+                <div style="position: relative;">
+                    <input type="text" id="rotationCodeFilter" placeholder="e.g., L103, OXD4083" oninput="syncRotationCodeSearch(this.value)" style="padding-right: 30px;">
+                    <button type="button" onclick="clearRotationCodeSearch()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 1.1em; padding: 2px 6px;" title="Clear search">✕</button>
+                </div>
+                <small style="font-size: 0.6em; color: #64748b; margin-top: 2px; display: block;">
+                    Search in programme number or preference name
+                </small>
+            </div>
+            <div class="filter-group">
+                <label>Required Specializations </label>
+                <select id="requiredSpecialtiesFilter" multiple size="4" style="font-size: 0.65em;">
+                    <!-- Will be populated dynamically -->
                 </select>
+                <small style="font-size: 0.6em; color: #64748b; margin-top: 2px; display: block;">
+                    Hold Ctrl/Cmd to select multiple. Shows only rotations with ALL selected.
+                </small>
+            </div>
+            <div class="filter-group">
+                <label>Preferred Specialization (sort order, optional)</label>
+                <select id="preferredSpecialtyFilter">
+                    <option value="">No preference</option>
+                </select>
+                <small style="font-size: 0.6em; color: #64748b; margin-top: 2px; display: block;">
+                    Rotations with this specialty shown first
+                </small>
             </div>
             <div class="filter-group">
                 <label>Exclude Specializations</label>
@@ -846,6 +868,12 @@
                 <span class="stat-label">Locations:</span>
                 <span class="stat-value" id="uniqueLocations">0</span>
             </div>
+            <div class="stat-item" style="margin-left: auto; position: relative;">
+                <input type="text" id="rotationCodeQuickSearch" placeholder="🔍 Search rotation code..." 
+                       oninput="syncRotationCodeSearch(this.value)" 
+                       style="padding: 6px 30px 6px 12px; border: 2px solid #e9d5ff; border-radius: 8px; font-size: 0.85em; width: 220px;">
+                <button type="button" onclick="clearRotationCodeSearch()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 1em; padding: 2px 6px;" title="Clear search">✕</button>
+            </div>
         </div>
 
         <div class="main-content">
@@ -901,6 +929,20 @@
         let hospitalMarkersByName = {}; // Map hospital names to their markers for hover functionality
 
         const FILTERS_COLLAPSED_STORAGE_KEY = 'rotations.filtersCollapsed.v1';
+        
+        // Sync rotation code search between quick search and filter panel
+        function syncRotationCodeSearch(value) {
+            document.getElementById('rotationCodeFilter').value = value;
+            document.getElementById('rotationCodeQuickSearch').value = value;
+            applyFilters();
+        }
+        
+        // Clear rotation code search
+        function clearRotationCodeSearch() {
+            document.getElementById('rotationCodeFilter').value = '';
+            document.getElementById('rotationCodeQuickSearch').value = '';
+            applyFilters();
+        }
         
         // Toggle Floating Panels
         function toggleFiltersPanel() {
@@ -1388,9 +1430,19 @@
             });
 
             const sortedSpecialties = Array.from(specialties).sort();
-            populateSelect('specialtyFilter', sortedSpecialties);
+            populateSelect('preferredSpecialtyFilter', sortedSpecialties);
             populateSelect('regionFilter', Array.from(regions).sort());
             populateSelect('locationFilter', Array.from(locations).sort());
+            
+            // Populate required specializations filter (without "All" option)
+            const requiredSelect = document.getElementById('requiredSpecialtiesFilter');
+            requiredSelect.innerHTML = '';
+            sortedSpecialties.forEach(spec => {
+                const option = document.createElement('option');
+                option.value = spec;
+                option.textContent = spec;
+                requiredSelect.appendChild(option);
+            });
             
             // Populate exclusion filter (without "All" option)
             const excludeSelect = document.getElementById('excludeSpecialtiesFilter');
@@ -1402,8 +1454,8 @@
                 excludeSelect.appendChild(option);
             });
             
-            // Set Haematology as default filter (removed London default)
-            document.getElementById('specialtyFilter').value = 'Haematology';
+            // Set Haematology as default preferred specialty
+            document.getElementById('preferredSpecialtyFilter').value = 'Haematology';
             // document.getElementById('regionFilter').value = 'London'; // REMOVED - no default location
         }
 
@@ -1423,10 +1475,15 @@
 
         // Apply filters
         function applyFilters() {
-            const specialty = document.getElementById('specialtyFilter').value;
+            const preferredSpecialty = document.getElementById('preferredSpecialtyFilter').value;
             const region = document.getElementById('regionFilter').value;
             const location = document.getElementById('locationFilter').value;
             const minRating = parseFloat(document.getElementById('ratingFilter').value) || 0;
+            const rotationCode = document.getElementById('rotationCodeFilter').value.trim().toLowerCase();
+            
+            // Get required specializations (must have ALL)
+            const requiredSelect = document.getElementById('requiredSpecialtiesFilter');
+            const requiredSpecialties = Array.from(requiredSelect.selectedOptions).map(opt => opt.value);
             
             // Get excluded specializations
             const excludeSelect = document.getElementById('excludeSpecialtiesFilter');
@@ -1445,10 +1502,19 @@
             };
 
             filteredRotations = allRotations.filter(r => {
-                // Check positive filter (must have this specialty)
-                let matchesSpecialty = !specialty;
-                if (specialty) {
-                    matchesSpecialty = r[specialtyMap[specialty]];
+                // Check rotation code search
+                let matchesCode = true;
+                if (rotationCode) {
+                    const progNum = (r.programme_number || '').toLowerCase();
+                    const pref = (r.preference || '').toLowerCase();
+                    const progName = (r.programme_name || '').toLowerCase();
+                    matchesCode = progNum.includes(rotationCode) || pref.includes(rotationCode) || progName.includes(rotationCode);
+                }
+                
+                // Check required specializations (must have ALL selected)
+                let hasAllRequired = true;
+                if (requiredSpecialties.length > 0) {
+                    hasAllRequired = requiredSpecialties.every(reqSpec => r[specialtyMap[reqSpec]]);
                 }
                 
                 // Check exclusions (must NOT have these specialties)
@@ -1461,8 +1527,21 @@
                 const matchesLocation = !location || r.location_name === location;
                 const matchesRating = r.google_rating >= minRating;
 
-                return matchesSpecialty && notExcluded && matchesRegion && matchesLocation && matchesRating;
+                return matchesCode && hasAllRequired && notExcluded && matchesRegion && matchesLocation && matchesRating;
             });
+            
+            // Sort by preferred specialty (rotations with preferred specialty first)
+            if (preferredSpecialty && specialtyMap[preferredSpecialty]) {
+                const prefField = specialtyMap[preferredSpecialty];
+                filteredRotations.sort((a, b) => {
+                    const aHas = a[prefField] ? 1 : 0;
+                    const bHas = b[prefField] ? 1 : 0;
+                    // Sort descending (rotations with preferred specialty first)
+                    if (bHas !== aHas) return bHas - aHas;
+                    // Secondary sort by rating
+                    return b.google_rating - a.google_rating;
+                });
+            }
 
             updateMap();
             
@@ -1480,20 +1559,26 @@
         
         function clearFilters() {
             // Clear all filters to show all rotations
-            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('rotationCodeFilter').value = '';
+            document.getElementById('rotationCodeQuickSearch').value = '';
+            document.getElementById('preferredSpecialtyFilter').value = '';
             document.getElementById('regionFilter').value = '';
             document.getElementById('locationFilter').value = '';
             document.getElementById('ratingFilter').value = '';
+            document.getElementById('requiredSpecialtiesFilter').selectedIndex = -1;
             document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1;
             applyFilters();
         }
 
         function showLondon() {
             // Set filters to show only London rotations
-            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('rotationCodeFilter').value = '';
+            document.getElementById('rotationCodeQuickSearch').value = '';
+            document.getElementById('preferredSpecialtyFilter').value = '';
             document.getElementById('regionFilter').value = 'London';
             document.getElementById('locationFilter').value = '';
             document.getElementById('ratingFilter').value = '';
+            document.getElementById('requiredSpecialtiesFilter').selectedIndex = -1;
             document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1;
             applyFilters();
             
@@ -1505,10 +1590,13 @@
 
         function showAllUK() {
             // Clear all filters to show all UK rotations
-            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('rotationCodeFilter').value = '';
+            document.getElementById('rotationCodeQuickSearch').value = '';
+            document.getElementById('preferredSpecialtyFilter').value = '';
             document.getElementById('regionFilter').value = '';
             document.getElementById('locationFilter').value = '';
             document.getElementById('ratingFilter').value = '';
+            document.getElementById('requiredSpecialtiesFilter').selectedIndex = -1;
             document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1;
             applyFilters();
             
@@ -1523,20 +1611,26 @@
             clearSelection();
             
             // Reset filters to defaults
-            document.getElementById('specialtyFilter').value = 'Haematology'; // Reset to default Haematology
+            document.getElementById('rotationCodeFilter').value = '';
+            document.getElementById('rotationCodeQuickSearch').value = '';
+            document.getElementById('preferredSpecialtyFilter').value = 'Haematology'; // Reset to default Haematology
             // document.getElementById('regionFilter').value = 'London'; // REMOVED - no default location
             document.getElementById('locationFilter').value = '';
             document.getElementById('ratingFilter').value = '';
+            document.getElementById('requiredSpecialtiesFilter').selectedIndex = -1; // Clear all selections
             document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1; // Clear all selections
             applyFilters();
         }
 
         function showAllLocations() {
             // Clear all filters to show all rotations
-            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('rotationCodeFilter').value = '';
+            document.getElementById('rotationCodeQuickSearch').value = '';
+            document.getElementById('preferredSpecialtyFilter').value = '';
             document.getElementById('regionFilter').value = '';
             document.getElementById('locationFilter').value = '';
             document.getElementById('ratingFilter').value = '';
+            document.getElementById('requiredSpecialtiesFilter').selectedIndex = -1; // Clear all selections
             document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1; // Clear all selections
             applyFilters();
             
