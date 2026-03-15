@@ -892,6 +892,10 @@
                         <input type="checkbox" id="filterAsIMove" onchange="toggleFilterAsIMove()" checked>
                         Filter as I move the map
                     </label>
+                    <label title="Show coverage circles and hospital connections for all filtered rotations">
+                        <input type="checkbox" id="showAllCircles" onchange="toggleAllCircles()">
+                        Show Rotation Circles
+                    </label>
                 </div>
                 <div class="commute-info" id="commuteInfo">
                     <div class="commute-info-header">
@@ -921,6 +925,7 @@
         let hospitalMarkersLayer;
         let rotationCircle = null;
         let hospitalConnections = null; // Lines connecting hospitals
+        let allRotationCirclesLayer; // Layer for all filtered rotation circles
         let allRotations = [];
         let filteredRotations = [];
         let selectedRotation = null;
@@ -1234,6 +1239,7 @@
             boroughsLayer = L.layerGroup().addTo(map); // On by default
             hospitalsLayer = L.layerGroup().addTo(map);
             hospitalMarkersLayer = L.layerGroup();
+            allRotationCirclesLayer = L.layerGroup();
 
             // Set borough toggle to checked by default
             document.getElementById('showBoroughs').checked = true;
@@ -1544,7 +1550,12 @@
             }
 
             updateMap();
-            
+
+            // Redraw all rotation circles if the toggle is on
+            if (document.getElementById('showAllCircles')?.checked) {
+                drawAllRotationCircles();
+            }
+
             // Check if "Filter as I move" is enabled
             const filterAsIMoveEnabled = document.getElementById('filterAsIMove')?.checked;
             if (filterAsIMoveEnabled && map) {
@@ -1735,10 +1746,19 @@
             }).join('');
         }
 
+        function scrollToSelectedCard() {
+            setTimeout(function() {
+                var selectedCard = document.querySelector('.rotation-card.selected');
+                if (selectedCard) {
+                    selectedCard.scrollIntoView({ behavior: 'instant', block: 'nearest' });
+                }
+            }, 100);
+        }
+
         function selectRotation(rotationId) {
             console.log('\n🎯 ========== ROTATION SELECTED ==========');
             console.log('🔑 Rotation ID:', rotationId);
-            
+
             const rotation = allRotations.find(r => r.id === rotationId);
             if (rotation && rotation.lat && rotation.lon) {
                 console.log('📌 Rotation:', rotation.preference);
@@ -1746,14 +1766,17 @@
                 console.log('🏥 Hospitals:', rotation.hospitals);
                 console.log('💼 Places Available:', rotation.places_available);
                 console.log('⭐ Rating:', rotation.google_rating);
-                
+
                 selectedRotation = rotation;
                 // Don't auto-zoom when clicking rotation - keep current map view
                 // map.setView([rotation.lat, rotation.lon], 13);
                 updateSidebar();
                 showCommuteInfo(rotation);
                 showHospitalLocations(rotation);
-                
+
+                // Scroll the selected card into view in the sidebar
+                scrollToSelectedCard();
+
                 console.log('✅ Rotation selection complete\n');
             } else {
                 console.error('❌ Rotation not found or missing coordinates:', rotationId);
@@ -2638,6 +2661,248 @@
             }
         }
 
+        // Toggle showing all rotation circles
+        function toggleAllCircles() {
+            var show = document.getElementById('showAllCircles').checked;
+            if (show) {
+                drawAllRotationCircles();
+                map.addLayer(allRotationCirclesLayer);
+            } else {
+                map.removeLayer(allRotationCirclesLayer);
+            }
+        }
+
+        // Find hospitals for a rotation (without adding markers to map)
+        function findHospitalsForRotation(rotation) {
+            var hospitalNames = extractHospitalNames(rotation.description, rotation.area);
+            var foundHospitals = [];
+            var foundHospitalIds = new Set();
+
+            if (hospitalNames.length === 0) {
+                var locationHospitals = hospitalsData.filter(function(h) {
+                    return h.name === rotation.location_name ||
+                        h.hospital_name.toLowerCase() === rotation.location_name.toLowerCase();
+                });
+                locationHospitals.forEach(function(hospital) {
+                    if (!foundHospitalIds.has(hospital.hospital_name)) {
+                        foundHospitals.push(hospital);
+                        foundHospitalIds.add(hospital.hospital_name);
+                    }
+                });
+                if (foundHospitals.length === 0 && rotation.lat && rotation.lon) {
+                    foundHospitals.push({
+                        hospital_name: rotation.location_name,
+                        name: rotation.location_name,
+                        region: rotation.region,
+                        lat: rotation.lat,
+                        lon: rotation.lon,
+                        google_rating: rotation.google_rating
+                    });
+                }
+            } else {
+                hospitalNames.forEach(function(hospName) {
+                    var hospLower = hospName.toLowerCase().replace(/\s+/g, ' ').trim();
+                    var matchedHospitals = hospitalsData.filter(function(h) {
+                        return h.hospital_name.toLowerCase().replace(/\s+/g, ' ').trim() === hospLower;
+                    });
+                    if (matchedHospitals.length === 0) {
+                        matchedHospitals = hospitalsData.filter(function(h) {
+                            var hNameLower = h.hospital_name.toLowerCase().replace(/\s+/g, ' ').trim();
+                            return hNameLower.includes(hospLower) || hospLower.includes(hNameLower);
+                        });
+                    }
+                    if (matchedHospitals.length === 0) {
+                        var commonWords = ['hospital', 'trust', 'foundation', 'royal', 'general', 'university', 'college', 'nhs', 'the', 'and'];
+                        var extractedWords = hospLower.split(' ').filter(function(w) { return w.length > 3 && !commonWords.includes(w); });
+                        if (extractedWords.length > 0) {
+                            matchedHospitals = hospitalsData.filter(function(h) {
+                                var hospitalWords = h.hospital_name.toLowerCase().replace(/\s+/g, ' ').trim()
+                                    .split(' ').filter(function(w) { return w.length > 3 && !commonWords.includes(w); });
+                                if (hospitalWords.length === 0) return false;
+                                var matchCount = extractedWords.filter(function(word) {
+                                    return hospitalWords.some(function(hw) { return hw === word || hw.includes(word) || word.includes(hw); });
+                                }).length;
+                                return matchCount / extractedWords.length >= 0.6;
+                            });
+                        }
+                    }
+                    if (matchedHospitals.length > 0) {
+                        var h = matchedHospitals[0];
+                        if (!foundHospitalIds.has(h.hospital_name)) {
+                            foundHospitals.push(h);
+                            foundHospitalIds.add(h.hospital_name);
+                        }
+                    }
+                });
+            }
+            return foundHospitals;
+        }
+
+        // Track highlighted circle for click selection
+        var highlightedCircle = null;
+
+        function highlightRotationCircle(circle) {
+            if (highlightedCircle) {
+                highlightedCircle.setStyle({
+                    color: '#9333ea',
+                    fillOpacity: 0.04,
+                    weight: 1.5,
+                    opacity: 0.3
+                });
+            }
+            circle.setStyle({
+                color: '#7c3aed',
+                fillOpacity: 0.15,
+                weight: 3,
+                opacity: 0.8
+            });
+            highlightedCircle = circle;
+        }
+
+        // Draw circles and connections for all filtered rotations
+        function drawAllRotationCircles() {
+            allRotationCirclesLayer.clearLayers();
+            highlightedCircle = null;
+
+            // First pass: compute circle data for all rotations
+            var circleData = [];
+            filteredRotations.forEach(function(rotation) {
+                if (!rotation.lat || !rotation.lon) return;
+
+                var foundHospitals = findHospitalsForRotation(rotation);
+                if (foundHospitals.length === 0) return;
+
+                var centerLat = foundHospitals.reduce(function(s, h) { return s + h.lat; }, 0) / foundHospitals.length;
+                var centerLon = foundHospitals.reduce(function(s, h) { return s + h.lon; }, 0) / foundHospitals.length;
+
+                var distances = foundHospitals.map(function(h) {
+                    var R = 6371000;
+                    var dLat = (h.lat - centerLat) * Math.PI / 180;
+                    var dLon = (h.lon - centerLon) * Math.PI / 180;
+                    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                            Math.cos(centerLat * Math.PI / 180) * Math.cos(h.lat * Math.PI / 180) *
+                            Math.sin(dLon/2) * Math.sin(dLon/2);
+                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                    return R * c;
+                });
+                var maxDistance = Math.max.apply(null, distances);
+
+                var circleRadius;
+                if (foundHospitals.length === 1) {
+                    circleRadius = 2500;
+                } else if (maxDistance > 1000 && maxDistance < 50000) {
+                    circleRadius = maxDistance + 1000;
+                }
+
+                if (circleRadius) {
+                    circleData.push({
+                        rotation: rotation,
+                        centerLat: centerLat,
+                        centerLon: centerLon,
+                        circleRadius: circleRadius,
+                        foundHospitals: foundHospitals
+                    });
+                }
+            });
+
+            // Sort by radius descending so smaller circles render on top of larger ones
+            circleData.sort(function(a, b) { return b.circleRadius - a.circleRadius; });
+
+            // Second pass: group nearby circles for combined tooltips
+            var NEARBY_THRESHOLD = 2000; // meters
+
+            circleData.forEach(function(data) {
+                var rotation = data.rotation;
+                var rotName = rotation.preference || rotation.programme_name;
+
+                // Find all rotations whose circles overlap with this one
+                var nearbyNames = [];
+                var nearbyIds = [];
+                circleData.forEach(function(other) {
+                    var R = 6371000;
+                    var dLat = (other.centerLat - data.centerLat) * Math.PI / 180;
+                    var dLon = (other.centerLon - data.centerLon) * Math.PI / 180;
+                    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                            Math.cos(data.centerLat * Math.PI / 180) * Math.cos(other.centerLat * Math.PI / 180) *
+                            Math.sin(dLon/2) * Math.sin(dLon/2);
+                    var dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                    if (dist < NEARBY_THRESHOLD) {
+                        var name = other.rotation.preference || other.rotation.programme_name;
+                        nearbyNames.push(name);
+                        nearbyIds.push(other.rotation.id);
+                    }
+                });
+
+                // Build tooltip content
+                var tooltipContent;
+                if (nearbyNames.length > 1) {
+                    tooltipContent = '<strong>' + nearbyNames.length + ' rotations here:</strong><br>' +
+                        nearbyNames.map(function(n) { return '• ' + n; }).join('<br>');
+                } else {
+                    tooltipContent = rotName;
+                }
+
+                var circle = L.circle([data.centerLat, data.centerLon], {
+                    radius: data.circleRadius,
+                    color: '#9333ea',
+                    fillColor: '#f3e8ff',
+                    fillOpacity: 0.04,
+                    weight: 1.5,
+                    opacity: 0.3,
+                    dashArray: '8, 12'
+                });
+
+                circle.bindTooltip(tooltipContent, {sticky: true, direction: 'top'});
+
+                // Store rotation reference for click selection
+                circle._rotationId = rotation.id;
+                circle._nearbyRotationIds = nearbyIds;
+
+                // Click to highlight and select rotation
+                circle.on('click', function(e) {
+                    L.DomEvent.stopPropagation(e);
+                    highlightRotationCircle(circle);
+                    selectRotation(rotation.id);
+                });
+
+                allRotationCirclesLayer.addLayer(circle);
+
+                // Draw connection lines (star pattern)
+                if (data.foundHospitals.length >= 2) {
+                    var mainHospital = data.foundHospitals[0];
+                    var mainCoord = [mainHospital.lat, mainHospital.lon];
+
+                    for (var i = 1; i < data.foundHospitals.length; i++) {
+                        var other = data.foundHospitals[i];
+                        var otherCoord = [other.lat, other.lon];
+
+                        var R = 6371000;
+                        var dLat = (other.lat - mainHospital.lat) * Math.PI / 180;
+                        var dLon = (other.lon - mainHospital.lon) * Math.PI / 180;
+                        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                                Math.cos(mainHospital.lat * Math.PI / 180) * Math.cos(other.lat * Math.PI / 180) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2);
+                        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                        var distanceKm = (R * c / 1000).toFixed(1);
+
+                        var polyline = L.polyline([mainCoord, otherCoord], {
+                            color: '#9333ea',
+                            weight: 1.5,
+                            opacity: 0.3,
+                            dashArray: '10, 10'
+                        }).bindTooltip(distanceKm + ' km', {
+                            permanent: true,
+                            direction: 'center',
+                            className: 'distance-label',
+                            offset: [0, 0]
+                        });
+
+                        allRotationCirclesLayer.addLayer(polyline);
+                    }
+                }
+            });
+        }
+
         // Toggle "Filter as I move" feature
         function toggleFilterAsIMove() {
             const enabled = document.getElementById('filterAsIMove').checked;
@@ -2725,6 +2990,11 @@
 
             // Update stats to reflect visible count
             updateStats(visibleRotations.length);
+
+            // Scroll to selected rotation if one is active
+            if (selectedRotation) {
+                scrollToSelectedCard();
+            }
         }
 
         // Clear selection and hospital markers
@@ -2733,6 +3003,17 @@
             hospitalMarkersLayer.clearLayers();
             hospitalMarkersByName = {}; // Clear hospital marker references
             map.removeLayer(hospitalMarkersLayer);
+
+            // Reset highlighted circle
+            if (highlightedCircle) {
+                highlightedCircle.setStyle({
+                    color: '#9333ea',
+                    fillOpacity: 0.04,
+                    weight: 1.5,
+                    opacity: 0.3
+                });
+                highlightedCircle = null;
+            }
             
             if (hospitalConnections) {
                 map.removeLayer(hospitalConnections);
