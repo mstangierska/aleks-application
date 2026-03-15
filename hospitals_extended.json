@@ -612,7 +612,7 @@
     "has_haematology": true,
     "lat": 51.4891,
     "lon": 0.0639,
-    "hospital_name": "Queen Elizabeth Hospital",
+    "hospital_name": "Queen Elizabeth Hospital Woolwich",
     "google_rating": 3.4
   },
   {
@@ -765,5 +765,59 @@
     "lat": 52.7124264,
     "lon": -2.5118238,
     "google_rating": 3.2
+  },
+  {
+    "hospital_name": "King George Hospital",
+    "name": "Barking, Havering and Redbridge",
+    "region": "London",
+    "sub_region": "London - East",
+    "lat": 51.5800,
+    "lon": 0.1120,
+    "google_rating": 3.0
+  },
+  {
+    "hospital_name": "Northwick Park Hospital",
+    "name": "Northwick Park",
+    "region": "London",
+    "sub_region": "London - North West",
+    "lat": 51.5752,
+    "lon": -0.3215,
+    "google_rating": 3.1
+  },
+  {
+    "hospital_name": "St Pancras Hospital",
+    "name": "St Pancras",
+    "region": "London",
+    "sub_region": "London - Central",
+    "lat": 51.5363,
+    "lon": -0.1314,
+    "google_rating": 3.4
+  },
+  {
+    "hospital_name": "Queen Elizabeth Hospital Birmingham",
+    "name": "Queen Elizabeth Birmingham",
+    "region": "West Midlands",
+    "sub_region": "West Midlands - Birmingham",
+    "lat": 52.4510,
+    "lon": -1.9392,
+    "google_rating": 3.8
+  },
+  {
+    "hospital_name": "Good Hope Hospital",
+    "name": "Good Hope",
+    "region": "West Midlands",
+    "sub_region": "West Midlands - Birmingham",
+    "lat": 52.5670,
+    "lon": -1.8120,
+    "google_rating": 3.5
+  },
+  {
+    "hospital_name": "Warwick Hospital",
+    "name": "Warwick",
+    "region": "West Midlands",
+    "sub_region": "West Midlands - Warwickshire",
+    "lat": 52.2903,
+    "lon": -1.5836,
+    "google_rating": 3.5
   }
 ]
