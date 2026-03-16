@@ -819,5 +819,41 @@
     "lat": 52.2903,
     "lon": -1.5836,
     "google_rating": 3.5
+  },
+  {
+    "hospital_name": "James Cook University Hospital",
+    "name": "James Cook University Hospital",
+    "region": "North East",
+    "sub_region": "North East - Teesside",
+    "lat": 54.5602,
+    "lon": -1.3120,
+    "google_rating": 3.8
+  },
+  {
+    "hospital_name": "St Peter's Hospital",
+    "name": "St Peter's",
+    "region": "Kent, Surrey and Sussex",
+    "sub_region": "Kent, Surrey and Sussex - Surrey",
+    "lat": 51.3860,
+    "lon": -0.5085,
+    "google_rating": 3.6
+  },
+  {
+    "hospital_name": "Queen Elizabeth The Queen Mother Hospital",
+    "name": "QEQM Margate",
+    "region": "Kent, Surrey and Sussex",
+    "sub_region": "Kent, Surrey and Sussex - East Kent",
+    "lat": 51.3839,
+    "lon": 1.3879,
+    "google_rating": 3.6
+  },
+  {
+    "hospital_name": "University Hospital Coventry and Warwickshire",
+    "name": "University Hospital Coventry",
+    "region": "West Midlands",
+    "sub_region": "West Midlands - South",
+    "lat": 52.4210,
+    "lon": -1.4527,
+    "google_rating": 3.6
   }
 ]

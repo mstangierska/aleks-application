@@ -60,6 +60,14 @@
             gap: 10px;
             align-items: center;
         }
+
+        .rotation-type-toggle {
+            display: flex;
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 2px;
+        }
         
         .icon-btn {
             background: rgba(255, 255, 255, 0.2);
@@ -78,6 +86,13 @@
             background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon-btn.active {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 1);
+            color: #7c3aed;
+            font-weight: bold;
         }
 
         /* Floating Filter Panel */
@@ -721,6 +736,10 @@
         <header>
             <h1>🏥 UK Medical Rotations Finder 💜</h1>
             <div class="header-controls">
+                <div class="rotation-type-toggle">
+                    <button class="icon-btn active" id="imtBtn" onclick="setRotationType('imt')" title="Internal Medicine Training">IMT</button>
+                    <button class="icon-btn" id="surgeryBtn" onclick="setRotationType('surgery')" title="Core Surgical Training">Surgery</button>
+                </div>
                 <button class="icon-btn" onclick="showLondon()" title="Show only London rotations">🏙️ London</button>
                 <button class="icon-btn" onclick="showAllUK()" title="Show all UK rotations">🇬🇧 UK</button>
                 <button class="icon-btn" onclick="toggleFiltersPanel()" title="Toggle Filters">🔍 Filters</button>
@@ -932,6 +951,8 @@
         let londonBoroughs = null;
         let hospitalsData = [];
         let hospitalMarkersByName = {}; // Map hospital names to their markers for hover functionality
+        let rotationType = 'imt'; // 'imt' or 'surgery'
+        let specialtyMap = {}; // Dynamic mapping of display names to field names
 
         const FILTERS_COLLAPSED_STORAGE_KEY = 'rotations.filtersCollapsed.v1';
         
@@ -1038,7 +1059,7 @@
                 item.innerHTML = `
                     <div class="saved-rotation-info" onclick="showSavedRotation(${index})">
                         <div class="saved-rotation-name">${rotation.preference || rotation.programme_name}</div>
-                        <div class="saved-rotation-meta">${rotation.location_name}, ${rotation.region} • ★ ${rotation.google_rating.toFixed(1)}</div>
+                        <div class="saved-rotation-meta">${rotation.location_name}, ${rotation.region} • ★ ${rotation.google_rating ? rotation.google_rating.toFixed(1) : 'N/A'}</div>
                     </div>
                     <button class="btn-remove" onclick="removeRotation(${index})">✕</button>
                 `;
@@ -1273,6 +1294,11 @@
                 }
             });
 
+            // Load rotation type from localStorage
+            rotationType = localStorage.getItem('rotationType') || 'imt';
+            document.getElementById('imtBtn').classList.toggle('active', rotationType === 'imt');
+            document.getElementById('surgeryBtn').classList.toggle('active', rotationType === 'surgery');
+
             loadData();
         }
 
@@ -1285,16 +1311,16 @@
                 
                 console.log('Loading from:', `${apiBase}/api/rotations`);
                 
-                const response = await fetch(`${apiBase}/api/rotations`);
+                const response = await fetch(`${apiBase}/api/rotations?type=${rotationType}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const allData = await response.json();
                 
-                // Filter out rotations with 0 places available
-                allRotations = allData.filter(r => r.places_available > 0);
+                // Filter out rotations with 0 places available or missing coordinates
+                allRotations = allData.filter(r => r.places_available > 0 && r.lat && r.lon);
                 
-                console.log(`Loaded ${allRotations.length} rotations (filtered ${allData.length - allRotations.length} with 0 places)`);
+                console.log(`Loaded ${allRotations.length} rotations (filtered ${allData.length - allRotations.length} with 0 places or missing coordinates)`);
                 
                 // Load hospitals data and filter out generic placeholders
                 try {
@@ -1419,17 +1445,17 @@
             const specialties = new Set();
             const regions = new Set();
             const locations = new Set();
+            specialtyMap = {}; // Reset
 
             allRotations.forEach(r => {
-                if (r.has_haematology) specialties.add('Haematology');
-                if (r.has_cardiology) specialties.add('Cardiology');
-                if (r.has_respiratory) specialties.add('Respiratory Medicine');
-                if (r.has_gastroenterology) specialties.add('Gastroenterology');
-                if (r.has_endocrinology) specialties.add('Endocrinology & Diabetes');
-                if (r.has_neurology) specialties.add('Neurology');
-                if (r.has_renal) specialties.add('Renal Medicine');
-                if (r.has_geriatric) specialties.add('Geriatric Medicine');
-                if (r.has_icu) specialties.add('Intensive Care Medicine');
+                // Collect all specialties dynamically
+                Object.keys(r).forEach(key => {
+                    if (key.startsWith('has_') && r[key]) {
+                        const specialtyName = key.replace('has_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        specialties.add(specialtyName);
+                        specialtyMap[specialtyName] = key;
+                    }
+                });
                 
                 regions.add(r.region);
                 locations.add(r.location_name);
@@ -1460,9 +1486,12 @@
                 excludeSelect.appendChild(option);
             });
             
-            // Set Haematology as default preferred specialty
-            document.getElementById('preferredSpecialtyFilter').value = 'Haematology';
-            // document.getElementById('regionFilter').value = 'London'; // REMOVED - no default location
+            // Set default preferred specialty based on type
+            if (rotationType === 'imt') {
+                document.getElementById('preferredSpecialtyFilter').value = 'Haematology';
+            } else {
+                document.getElementById('preferredSpecialtyFilter').value = ''; // No default for Surgery
+            }
         }
 
         function populateSelect(id, options) {
@@ -1495,18 +1524,6 @@
             const excludeSelect = document.getElementById('excludeSpecialtiesFilter');
             const excludedSpecialties = Array.from(excludeSelect.selectedOptions).map(opt => opt.value);
 
-            const specialtyMap = {
-                'Haematology': 'has_haematology',
-                'Cardiology': 'has_cardiology',
-                'Respiratory Medicine': 'has_respiratory',
-                'Gastroenterology': 'has_gastroenterology',
-                'Endocrinology & Diabetes': 'has_endocrinology',
-                'Neurology': 'has_neurology',
-                'Renal Medicine': 'has_renal',
-                'Geriatric Medicine': 'has_geriatric',
-                'Intensive Care Medicine': 'has_icu'
-            };
-
             filteredRotations = allRotations.filter(r => {
                 // Check rotation code search
                 let matchesCode = true;
@@ -1532,8 +1549,9 @@
                 const matchesRegion = !region || r.region === region;
                 const matchesLocation = !location || r.location_name === location;
                 const matchesRating = r.google_rating >= minRating;
+                const matchesPreferred = !preferredSpecialty || (specialtyMap[preferredSpecialty] && r[specialtyMap[preferredSpecialty]]);
 
-                return matchesCode && hasAllRequired && notExcluded && matchesRegion && matchesLocation && matchesRating;
+                return matchesCode && hasAllRequired && notExcluded && matchesRegion && matchesLocation && matchesRating && matchesPreferred;
             });
             
             // Sort by preferred specialty (rotations with preferred specialty first)
@@ -1579,6 +1597,16 @@
             document.getElementById('requiredSpecialtiesFilter').selectedIndex = -1;
             document.getElementById('excludeSpecialtiesFilter').selectedIndex = -1;
             applyFilters();
+        }
+
+        function setRotationType(type) {
+            rotationType = type;
+            localStorage.setItem('rotationType', type);
+            // Update button states
+            document.getElementById('imtBtn').classList.toggle('active', type === 'imt');
+            document.getElementById('surgeryBtn').classList.toggle('active', type === 'surgery');
+            // Reload data
+            loadData();
         }
 
         function showLondon() {
@@ -1659,9 +1687,10 @@
                 if (rotation.lat && rotation.lon) {
                     const specialties = getSpecialties(rotation);
                     
+                    const isPrimary = rotationType === 'imt' ? rotation.has_haematology : Object.keys(rotation).some(key => key.startsWith('has_') && rotation[key]);
                     const marker = L.marker([rotation.lat, rotation.lon], {
                         icon: L.divIcon({
-                            html: `<div style="background: ${rotation.has_haematology ? '#7c3aed' : '#a855f7'}; 
+                            html: `<div style="background: ${isPrimary ? '#7c3aed' : '#a855f7'}; 
                                     color: white; border-radius: 50%; width: 12px; height: 12px; 
                                     border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
                             iconSize: [12, 12],
@@ -1674,7 +1703,7 @@
                             <div class="popup-title">${rotation.preference || rotation.programme_name}</div>
                             <div class="popup-detail"><strong>Location:</strong> ${rotation.location_name}</div>
                             <div class="popup-detail"><strong>Region:</strong> ${rotation.region}</div>
-                            <div class="popup-detail"><strong>Rating:</strong> ⭐ ${rotation.google_rating.toFixed(1)}</div>
+                            <div class="popup-detail"><strong>Rating:</strong> ⭐ ${rotation.google_rating ? rotation.google_rating.toFixed(1) : 'N/A'}</div>
                             <div class="popup-detail"><strong>Duration:</strong> ${rotation.duration_months} months</div>
                             <div class="popup-detail"><strong>Places:</strong> ${rotation.places_available}</div>
                             <div class="popup-specialties">
@@ -1734,7 +1763,7 @@
                                 <span class="detail-label">🗺️ Region:</span> ${rotation.region}
                             </div>
                             <div class="rotation-detail-row">
-                                <span class="rating-badge">⭐ ${rotation.google_rating.toFixed(1)}</span>
+                                <span class="rating-badge">⭐ ${rotation.google_rating ? rotation.google_rating.toFixed(1) : 'N/A'}</span>
                                 <span style="margin-left: 8px; color: #64748b;">📅 ${rotation.duration_months}mo • 👥 ${rotation.places_available} ${rotation.places_available !== 1 ? 'places' : 'place'}</span>
                             </div>
                             <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
@@ -2213,6 +2242,85 @@
                 return [];
             }
             
+            // Hospital name variations mapping (same as backend)
+            const HOSPITAL_VARIATIONS = {
+                'Royal Brompton Hospital': ['Royal Brompton Hospital', 'Brompton', 'Brompton Cardiothoracic', 'Royal Brompton'],
+                'Manchester Royal Infirmary': ['Manchester Royal Infirmary', 'MRI', 'Manchester Royal', 'Royal Infirmary Manchester'],
+                'Nottingham City Campus': ['Nottingham City Campus', 'Nottingham City Hospital', 'City Hospital Nottingham'],
+                'Nottingham QMC': ['Nottingham QMC', 'Queen\'s Medical Centre', 'QMC', 'Queens Medical Centre'],
+                'Royal Derby Hospital': ['Royal Derby Hospital', 'Derby Hospital', 'Royal Derby'],
+                'Royal Stoke University Hospital': ['Royal Stoke University Hospital', 'Royal Stoke', 'Stoke University Hospital', 'University Hospital Stoke'],
+                'Royal Liverpool University Hospital': ['Royal Liverpool University Hospital', 'Royal Liverpool', 'Liverpool Royal'],
+                'University Hospital Aintree': ['University Hospital Aintree', 'Aintree University Hospital', 'Aintree Hospital'],
+                'North Manchester General Hospital': ['North Manchester General Hospital', 'North Manchester', 'Manchester North General'],
+                'Royal Oldham Hospital': ['Royal Oldham Hospital', 'Oldham Hospital', 'Royal Oldham'],
+                'Salford Royal Hospital': ['Salford Royal Hospital', 'Salford Royal', 'Hope Hospital'],
+                'Queen Elizabeth Hospital': ['Queen Elizabeth Hospital', 'QE Birmingham', 'Queen Elizabeth Birmingham'],
+                'Heartlands Hospital': ['Heartlands Hospital', 'Birmingham Heartlands'],
+                'Midland Metropolitan University Hospital': ['Midland Metropolitan University Hospital', 'Midland Metropolitan', 'Sandwell Hospital'],
+                'Leicester Royal Infirmary': ['Leicester Royal Infirmary', 'Leicester Royal', 'Royal Infirmary Leicester'],
+                'Glenfield Hospital': ['Glenfield Hospital', 'Leicester Glenfield'],
+                'Royal Preston Hospital': ['Royal Preston Hospital', 'Preston Royal', 'Royal Preston'],
+                'Wythenshawe Hospital': ['Wythenshawe Hospital', 'Manchester Wythenshawe', 'Wythenshawe'],
+                'Stepping Hill Hospital': ['Stepping Hill Hospital', 'Stepping Hill', 'Stockport Hospital'],
+                'Tameside General Hospital': ['Tameside General Hospital', 'Tameside Hospital'],
+                'Warrington Hospital': ['Warrington Hospital', 'Warrington General'],
+                'Whiston Hospital': ['Whiston Hospital', 'St Helens Hospital'],
+                'Worcestershire Royal Hospital': ['Worcestershire Royal Hospital', 'Worcester Royal', 'Worcestershire Royal'],
+                'George Eliot Hospital': ['George Eliot Hospital', 'Nuneaton Hospital'],
+                'New Cross Hospital': ['New Cross Hospital', 'Wolverhampton New Cross'],
+                'Russells Hall Hospital': ['Russells Hall Hospital', 'Dudley Hospital'],
+                'Warwick Hospital': ['Warwick Hospital', 'Warwick General'],
+                'Kettering General Hospital': ['Kettering General Hospital', 'Kettering Hospital', 'Kettering General Hospital (RNQ51)', 'Kettering Hospital (RNQ51)', 'RNQ51'],
+                'Northampton General Hospital': ['Northampton General Hospital', 'Northampton Hospital'],
+                'Lincoln County Hospital': ['Lincoln County Hospital', 'Lincoln Hospital'],
+                'Barnet Hospital': ['Barnet Hospital', 'Barnet'],
+                'Kings Mill Hospital': ['Kings Mill Hospital', 'Mansfield Hospital'],
+                'Chesterfield Royal Hospital': ['Chesterfield Royal Hospital', 'Chesterfield Hospital'],
+                'Countess of Chester Hospital': ['Countess of Chester Hospital', 'Chester Hospital'],
+                'Leighton Hospital': ['Leighton Hospital', 'Crewe Hospital'],
+                'Royal Lancaster Infirmary': ['Royal Lancaster Infirmary', 'Lancaster Royal', 'Royal Lancaster'],
+                'Royal Blackburn Hospital': ['Royal Blackburn Hospital', 'Blackburn Royal'],
+                'Royal Bolton Hospital': ['Royal Bolton Hospital', 'Bolton Royal'],
+                'Royal Albert Edward Infirmary': ['Royal Albert Edward Infirmary', 'Wigan Royal', 'Royal Albert Edward'],
+                'Blackpool Victoria Hospital': ['Blackpool Victoria Hospital', 'Blackpool Hospital', 'Victoria Hospital Blackpool'],
+                'Southport and Formby District General Hospital': ['Southport and Formby District General Hospital', 'Southport Hospital', 'Formby Hospital'],
+                'The Princess Royal Hospital': ['The Princess Royal Hospital', 'Princess Royal Hospital', 'Telford Hospital'],
+                'Royal Shrewsbury Hospital': ['Royal Shrewsbury Hospital', 'Shrewsbury Royal', 'Royal Shrewsbury'],
+                'Alexandra Hospital': ['Alexandra Hospital', 'Cheadle Hospital'],
+                'Arrowe Park Hospital': ['Arrowe Park Hospital', 'Arrowe Park', 'Wirral Hospital'],
+                'Birmingham Children\'s Hospital': ['Birmingham Children\'s Hospital', 'Birmingham Childrens', 'Children\'s Hospital Birmingham'],
+                'Manor Hospital': ['Manor Hospital', 'Walsall Manor', 'Walsall Hospital'],
+                'University Hospital': ['UCLH', 'University College London Hospital', 'University College Hospital'],
+                'University Hospital Coventry and Warwickshire': ['University Hospital Coventry and Warwickshire', 'University Hospital (Coventry)', 'University Hospital Coventry', 'RKB01'],
+                'West Middlesex Hospital': ['West Middlesex Hospital', 'West Middlesex', 'West Middlesex Gen Surg', 'West Middlesex Gen Surg.'],
+                'Northwick Park Hospital': ['Northwick Park Hospital', 'Northwick Park', 'Northwick Park Gen Surg', 'Northwick Park Gen Surg.'],
+                'James Cook University Hospital': ['James Cook University Hospital', 'James Cook', 'James Cook UHAM', 'James Cook Hosp', 'James Cook Univ Hospital'],
+                'Conquest Hospital': ['Conquest Hospital', 'Conquest', 'Conquest Gen Surg', 'Conquest General Surgery'],
+                'Whipps Cross Hospital': ['Whipps Cross Hospital', 'Whipps X', 'Whipps Cross', 'Whipp X'],
+                'Princess Royal University Hospital': ['Princess Royal University Hospital', 'PRUH'],
+                'Guy\'s Hospital': ['Guy\'s Hospital', 'Guy\'s', 'GSTT'],
+                'St Thomas\' Hospital': ['St Thomas\' Hospital', 'St Thomas\'s Hospital', 'St Thomas', 'GSTT'],
+                'Chelsea and Westminster Hospital': ['Chelsea and Westminster Hospital', 'C&W'],
+                'Royal Surrey County Hospital': ['Royal Surrey County Hospital', 'Royal Surrey'],
+                'Queen\'s Hospital': ['Queen\'s Hospital', 'Queen\'s'],
+                'Maidstone Hospital': ['Maidstone Hospital', 'Maidstone & Tunbridge Wells', 'MTW'],
+                'Queen Elizabeth Hospital Woolwich': ['Queen Elizabeth Hospital Woolwich', 'QEH'],
+                'Charing Cross Hospital': ['Charing Cross Hospital', 'Charing X'],
+                'St Mary\'s Hospital': ['St Mary\'s Hospital', 'St. Mary\'s', 'Mary\'s'],
+                'Epsom General Hospital': ['Epsom General Hospital', 'Epsom'],
+                'St Helier Hospital': ['St Helier Hospital', 'St. Helier', 'Helier'],
+                'Royal London Hospital': ['Royal London Hospital', 'Royal London', 'RLH'],
+                'William Harvey Hospital': ['William Harvey Hospital', 'East Kent (WHH Ashford)', 'WHH Ashford'],
+                'King George Hospital': ['King George Hospital', 'KGH'],
+                'Royal Free Hospital': ['Royal Free Hospital', 'RFH'],
+                'St George\'s Hospital': ['St George\'s Hospital', 'St. George\'s', 'St Georges'],
+                'St Helier Hospital': ['St Helier Hospital', 'St. Helier', 'Epsom & St. Helier', 'Epsom and St Helier'],
+                'St Peter\'s Hospital': ['St Peter\'s Hospital', 'St Peters', 'St. Peters', 'St Peter'],
+                'Queen Elizabeth The Queen Mother Hospital': ['Queen Elizabeth The Queen Mother Hospital', 'East Kent (QEQM)', 'QEQM'],
+                'East Surrey Hospital': ['East Surrey Hospital', 'SASH']
+            };
+            
             // Get all known hospital names from our database
             const knownHospitals = hospitalsData.map(h => h.hospital_name).filter(name => name && name.length > 5);
             
@@ -2223,28 +2331,60 @@
             // Track which character positions are already matched to avoid overlaps
             const matchedRanges = [];
             
+            // First, try variations matching
+            Object.keys(HOSPITAL_VARIATIONS).forEach(canonicalName => {
+                if (knownHospitals.includes(canonicalName)) {
+                    const variations = HOSPITAL_VARIATIONS[canonicalName];
+                    variations.forEach(variation => {
+                        const escapedVariation = variation.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const regex = new RegExp(`\\b${escapedVariation}\\b`, 'gi');
+                        
+                        let match;
+                        while ((match = regex.exec(description)) !== null) {
+                            const start = match.index;
+                            const end = start + match[0].length;
+                            
+                            // Check if this range overlaps with any existing match
+                            const overlaps = matchedRanges.some(range => 
+                                (start >= range.start && start < range.end) || 
+                                (end > range.start && end <= range.end) ||
+                                (start <= range.start && end >= range.end)
+                            );
+                            
+                            if (!overlaps) {
+                                matchedRanges.push({ start, end });
+                                hospitals.add(canonicalName); // Use the canonical name from database
+                            }
+                        }
+                    });
+                }
+            });
+            
+            // Then try direct matching for hospitals not in variations
             sortedHospitals.forEach(hospitalName => {
-                // Escape special regex characters in hospital name
-                const escapedName = hospitalName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                
-                // Create regex with word boundaries
-                const regex = new RegExp(`\\b${escapedName}\\b`, 'gi');
-                
-                let match;
-                while ((match = regex.exec(description)) !== null) {
-                    const start = match.index;
-                    const end = start + match[0].length;
+                if (!Object.keys(HOSPITAL_VARIATIONS).includes(hospitalName)) {
+                    // Escape special regex characters in hospital name
+                    const escapedName = hospitalName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                     
-                    // Check if this range overlaps with any existing match
-                    const overlaps = matchedRanges.some(range => 
-                        (start >= range.start && start < range.end) || 
-                        (end > range.start && end <= range.end) ||
-                        (start <= range.start && end >= range.end)
-                    );
+                    // Create regex with word boundaries
+                    const regex = new RegExp(`\\b${escapedName}\\b`, 'gi');
                     
-                    if (!overlaps) {
-                        matchedRanges.push({ start, end });
-                        hospitals.add(hospitalName); // Use the canonical name from database
+                    let match;
+                    while ((match = regex.exec(description)) !== null) {
+                        const start = match.index;
+                        const end = start + match[0].length;
+                        
+                        // Check if this range overlaps with any existing match
+                        const overlaps = matchedRanges.some(range => 
+                            (start >= range.start && start < range.end) || 
+                            (end > range.start && end <= range.end) ||
+                            (start <= range.start && end >= range.end)
+                        );
+                        
+                        if (!overlaps) {
+                            matchedRanges.push({ start, end });
+                            hospitals.add(hospitalName); // Use the canonical name from database
+                        }
                     }
                 }
             });
@@ -2259,6 +2399,85 @@
                 return description;
             }
             
+            // Hospital name variations mapping (same as backend)
+            const HOSPITAL_VARIATIONS = {
+                'Royal Brompton Hospital': ['Royal Brompton Hospital', 'Brompton', 'Brompton Cardiothoracic', 'Royal Brompton'],
+                'Manchester Royal Infirmary': ['Manchester Royal Infirmary', 'MRI', 'Manchester Royal', 'Royal Infirmary Manchester'],
+                'Nottingham City Campus': ['Nottingham City Campus', 'Nottingham City Hospital', 'City Hospital Nottingham'],
+                'Nottingham QMC': ['Nottingham QMC', 'Queen\'s Medical Centre', 'QMC', 'Queens Medical Centre'],
+                'Royal Derby Hospital': ['Royal Derby Hospital', 'Derby Hospital', 'Royal Derby'],
+                'Royal Stoke University Hospital': ['Royal Stoke University Hospital', 'Royal Stoke', 'Stoke University Hospital', 'University Hospital Stoke'],
+                'Royal Liverpool University Hospital': ['Royal Liverpool University Hospital', 'Royal Liverpool', 'Liverpool Royal'],
+                'University Hospital Aintree': ['University Hospital Aintree', 'Aintree University Hospital', 'Aintree Hospital'],
+                'North Manchester General Hospital': ['North Manchester General Hospital', 'North Manchester', 'Manchester North General'],
+                'Royal Oldham Hospital': ['Royal Oldham Hospital', 'Oldham Hospital', 'Royal Oldham'],
+                'Salford Royal Hospital': ['Salford Royal Hospital', 'Salford Royal', 'Hope Hospital'],
+                'Queen Elizabeth Hospital': ['Queen Elizabeth Hospital', 'QE Birmingham', 'Queen Elizabeth Birmingham'],
+                'Heartlands Hospital': ['Heartlands Hospital', 'Birmingham Heartlands'],
+                'Midland Metropolitan University Hospital': ['Midland Metropolitan University Hospital', 'Midland Metropolitan', 'Sandwell Hospital'],
+                'Leicester Royal Infirmary': ['Leicester Royal Infirmary', 'Leicester Royal', 'Royal Infirmary Leicester'],
+                'Glenfield Hospital': ['Glenfield Hospital', 'Leicester Glenfield'],
+                'Royal Preston Hospital': ['Royal Preston Hospital', 'Preston Royal', 'Royal Preston'],
+                'Wythenshawe Hospital': ['Wythenshawe Hospital', 'Manchester Wythenshawe', 'Wythenshawe'],
+                'Stepping Hill Hospital': ['Stepping Hill Hospital', 'Stepping Hill', 'Stockport Hospital'],
+                'Tameside General Hospital': ['Tameside General Hospital', 'Tameside Hospital'],
+                'Warrington Hospital': ['Warrington Hospital', 'Warrington General'],
+                'Whiston Hospital': ['Whiston Hospital', 'St Helens Hospital'],
+                'Worcestershire Royal Hospital': ['Worcestershire Royal Hospital', 'Worcester Royal', 'Worcestershire Royal'],
+                'George Eliot Hospital': ['George Eliot Hospital', 'Nuneaton Hospital'],
+                'New Cross Hospital': ['New Cross Hospital', 'Wolverhampton New Cross'],
+                'Russells Hall Hospital': ['Russells Hall Hospital', 'Dudley Hospital'],
+                'Warwick Hospital': ['Warwick Hospital', 'Warwick General'],
+                'Kettering General Hospital': ['Kettering General Hospital', 'Kettering Hospital', 'Kettering General Hospital (RNQ51)', 'Kettering Hospital (RNQ51)', 'RNQ51'],
+                'Northampton General Hospital': ['Northampton General Hospital', 'Northampton Hospital'],
+                'Lincoln County Hospital': ['Lincoln County Hospital', 'Lincoln Hospital'],
+                'Barnet Hospital': ['Barnet Hospital', 'Barnet'],
+                'Kings Mill Hospital': ['Kings Mill Hospital', 'Mansfield Hospital'],
+                'Chesterfield Royal Hospital': ['Chesterfield Royal Hospital', 'Chesterfield Hospital'],
+                'Countess of Chester Hospital': ['Countess of Chester Hospital', 'Chester Hospital'],
+                'Leighton Hospital': ['Leighton Hospital', 'Crewe Hospital'],
+                'Royal Lancaster Infirmary': ['Royal Lancaster Infirmary', 'Lancaster Royal', 'Royal Lancaster'],
+                'Royal Blackburn Hospital': ['Royal Blackburn Hospital', 'Blackburn Royal'],
+                'Royal Bolton Hospital': ['Royal Bolton Hospital', 'Bolton Royal'],
+                'Royal Albert Edward Infirmary': ['Royal Albert Edward Infirmary', 'Wigan Royal', 'Royal Albert Edward'],
+                'Blackpool Victoria Hospital': ['Blackpool Victoria Hospital', 'Blackpool Hospital', 'Victoria Hospital Blackpool'],
+                'Southport and Formby District General Hospital': ['Southport and Formby District General Hospital', 'Southport Hospital', 'Formby Hospital'],
+                'The Princess Royal Hospital': ['The Princess Royal Hospital', 'Princess Royal Hospital', 'Telford Hospital'],
+                'Royal Shrewsbury Hospital': ['Royal Shrewsbury Hospital', 'Shrewsbury Royal', 'Royal Shrewsbury'],
+                'Alexandra Hospital': ['Alexandra Hospital', 'Cheadle Hospital'],
+                'Arrowe Park Hospital': ['Arrowe Park Hospital', 'Arrowe Park', 'Wirral Hospital'],
+                'Birmingham Children\'s Hospital': ['Birmingham Children\'s Hospital', 'Birmingham Childrens', 'Children\'s Hospital Birmingham'],
+                'Manor Hospital': ['Manor Hospital', 'Walsall Manor', 'Walsall Hospital'],
+                'University Hospital': ['UCLH', 'University College London Hospital', 'University College Hospital'],
+                'University Hospital Coventry and Warwickshire': ['University Hospital Coventry and Warwickshire', 'University Hospital (Coventry)', 'University Hospital Coventry', 'RKB01'],
+                'West Middlesex Hospital': ['West Middlesex Hospital', 'West Middlesex', 'West Middlesex Gen Surg', 'West Middlesex Gen Surg.'],
+                'Northwick Park Hospital': ['Northwick Park Hospital', 'Northwick Park', 'Northwick Park Gen Surg', 'Northwick Park Gen Surg.'],
+                'James Cook University Hospital': ['James Cook University Hospital', 'James Cook', 'James Cook UHAM', 'James Cook Hosp', 'James Cook Univ Hospital'],
+                'Conquest Hospital': ['Conquest Hospital', 'Conquest', 'Conquest Gen Surg', 'Conquest General Surgery'],
+                'Whipps Cross Hospital': ['Whipps Cross Hospital', 'Whipps X', 'Whipps Cross', 'Whipp X'],
+                'Princess Royal University Hospital': ['Princess Royal University Hospital', 'PRUH'],
+                'Guy\'s Hospital': ['Guy\'s Hospital', 'Guy\'s', 'GSTT'],
+                'St Thomas\' Hospital': ['St Thomas\' Hospital', 'St Thomas\'s Hospital', 'St Thomas', 'GSTT'],
+                'Chelsea and Westminster Hospital': ['Chelsea and Westminster Hospital', 'C&W'],
+                'Royal Surrey County Hospital': ['Royal Surrey County Hospital', 'Royal Surrey'],
+                'Queen\'s Hospital': ['Queen\'s Hospital', 'Queen\'s'],
+                'Maidstone Hospital': ['Maidstone Hospital', 'Maidstone & Tunbridge Wells', 'MTW'],
+                'Queen Elizabeth Hospital Woolwich': ['Queen Elizabeth Hospital Woolwich', 'QEH'],
+                'Charing Cross Hospital': ['Charing Cross Hospital', 'Charing X'],
+                'St Mary\'s Hospital': ['St Mary\'s Hospital', 'St. Mary\'s', 'Mary\'s'],
+                'Epsom General Hospital': ['Epsom General Hospital', 'Epsom'],
+                'St Helier Hospital': ['St Helier Hospital', 'St. Helier', 'Helier'],
+                'Royal London Hospital': ['Royal London Hospital', 'Royal London', 'RLH'],
+                'William Harvey Hospital': ['William Harvey Hospital', 'East Kent (WHH Ashford)', 'WHH Ashford'],
+                'King George Hospital': ['King George Hospital', 'KGH'],
+                'Royal Free Hospital': ['Royal Free Hospital', 'RFH'],
+                'St George\'s Hospital': ['St George\'s Hospital', 'St. George\'s', 'St Georges'],
+                'St Helier Hospital': ['St Helier Hospital', 'St. Helier', 'Epsom & St. Helier', 'Epsom and St Helier'],
+                'St Peter\'s Hospital': ['St Peter\'s Hospital', 'St Peters', 'St. Peters', 'St Peter'],
+                'Queen Elizabeth The Queen Mother Hospital': ['Queen Elizabeth The Queen Mother Hospital', 'East Kent (QEQM)', 'QEQM'],
+                'East Surrey Hospital': ['East Surrey Hospital', 'SASH']
+            };
+            
             let highlighted = description;
             
             // Get all known hospital names from our database
@@ -2271,27 +2490,58 @@
             // Track which character positions are already highlighted to avoid overlaps
             const highlightedRanges = [];
             
+            // First, try variations matching
+            Object.keys(HOSPITAL_VARIATIONS).forEach(canonicalName => {
+                if (knownHospitals.includes(canonicalName)) {
+                    const variations = HOSPITAL_VARIATIONS[canonicalName];
+                    variations.forEach(variation => {
+                        const escapedVariation = variation.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const regex = new RegExp(`\\b${escapedVariation}\\b`, 'gi');
+                        
+                        let match;
+                        while ((match = regex.exec(description)) !== null) {
+                            const start = match.index;
+                            const end = start + match[0].length;
+                            
+                            // Check if this range overlaps with any existing highlight
+                            const overlaps = highlightedRanges.some(range => 
+                                (start >= range.start && start < range.end) || 
+                                (end > range.start && end <= range.end) ||
+                                (start <= range.start && end >= range.end)
+                            );
+                            
+                            if (!overlaps) {
+                                highlightedRanges.push({ start, end, name: match[0] });
+                            }
+                        }
+                    });
+                }
+            });
+            
+            // Then try direct matching for hospitals not in variations
             sortedHospitals.forEach(hospitalName => {
-                // Escape special regex characters in hospital name
-                const escapedName = hospitalName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                
-                // Create regex with word boundaries
-                const regex = new RegExp(`\\b${escapedName}\\b`, 'gi');
-                
-                let match;
-                while ((match = regex.exec(description)) !== null) {
-                    const start = match.index;
-                    const end = start + match[0].length;
+                if (!Object.keys(HOSPITAL_VARIATIONS).includes(hospitalName)) {
+                    // Escape special regex characters in hospital name
+                    const escapedName = hospitalName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                     
-                    // Check if this range overlaps with any existing highlight
-                    const overlaps = highlightedRanges.some(range => 
-                        (start >= range.start && start < range.end) || 
-                        (end > range.start && end <= range.end) ||
-                        (start <= range.start && end >= range.end)
-                    );
+                    // Create regex with word boundaries
+                    const regex = new RegExp(`\\b${escapedName}\\b`, 'gi');
                     
-                    if (!overlaps) {
-                        highlightedRanges.push({ start, end, name: match[0] });
+                    let match;
+                    while ((match = regex.exec(description)) !== null) {
+                        const start = match.index;
+                        const end = start + match[0].length;
+                        
+                        // Check if this range overlaps with any existing highlight
+                        const overlaps = highlightedRanges.some(range => 
+                            (start >= range.start && start < range.end) || 
+                            (end > range.start && end <= range.end) ||
+                            (start <= range.start && end >= range.end)
+                        );
+                        
+                        if (!overlaps) {
+                            highlightedRanges.push({ start, end, name: match[0] });
+                        }
                     }
                 }
             });
@@ -2399,15 +2649,12 @@
         // Get specialties for a rotation
         function getSpecialties(rotation) {
             const specs = [];
-            if (rotation.has_haematology) specs.push('Haematology');
-            if (rotation.has_cardiology) specs.push('Cardiology');
-            if (rotation.has_respiratory) specs.push('Respiratory');
-            if (rotation.has_gastroenterology) specs.push('Gastroenterology');
-            if (rotation.has_endocrinology) specs.push('Endocrinology');
-            if (rotation.has_neurology) specs.push('Neurology');
-            if (rotation.has_renal) specs.push('Renal');
-            if (rotation.has_geriatric) specs.push('Geriatric');
-            if (rotation.has_icu) specs.push('ICU');
+            Object.keys(rotation).forEach(key => {
+                if (key.startsWith('has_') && rotation[key]) {
+                    const specialtyName = key.replace('has_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    specs.push(specialtyName);
+                }
+            });
             return specs;
         }
 
@@ -2582,7 +2829,7 @@
                 <div class="commute-item" style="background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border-left: 4px solid #9333ea;">
                     <div class="commute-mode" style="color: #6b21a8; font-weight: 700; font-size: 0.95em;">${rotation.preference || rotation.programme_name}</div>
                     <div style="font-size: 0.85em; color: #1f2937; margin-top: 6px;">
-                        <span class="rating-badge" style="background: #fbbf24; color: #78350f; border: 1px solid #f59e0b;">★ ${rotation.google_rating.toFixed(1)}</span>
+                        <span class="rating-badge" style="background: #fbbf24; color: #78350f; border: 1px solid #f59e0b;">★ ${rotation.google_rating ? rotation.google_rating.toFixed(1) : 'N/A'}</span>
                         <span style="margin-left: 8px; color: #64748b;">6 months per rotation • ${rotation.places_available} ${rotation.places_available !== 1 ? 'places' : 'place'}</span>
                     </div>
                 </div>
@@ -2977,7 +3224,7 @@
                                 <span class="detail-label">🗺️ Region:</span> ${rotation.region}
                             </div>
                             <div class="rotation-detail-row">
-                                <span class="rating-badge">⭐ ${rotation.google_rating.toFixed(1)}</span>
+                                <span class="rating-badge">⭐ ${rotation.google_rating ? rotation.google_rating.toFixed(1) : 'N/A'}</span>
                                 <span style="margin-left: 8px; color: #64748b;">📅 ${rotation.duration_months}mo • 👥 ${rotation.places_available} ${rotation.places_available !== 1 ? 'places' : 'place'}</span>
                             </div>
                             <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
@@ -3062,9 +3309,10 @@
             
             // Add markers for visible rotations
             visibleRotations.forEach(rotation => {
+                const isPrimary = rotationType === 'imt' ? rotation.has_haematology : Object.keys(rotation).some(key => key.startsWith('has_') && rotation[key]);
                 const marker = L.marker([rotation.lat, rotation.lon], {
                     icon: L.divIcon({
-                        html: `<div style="background: ${rotation.has_haematology ? '#7c3aed' : '#a855f7'}; 
+                        html: `<div style="background: ${isPrimary ? '#7c3aed' : '#a855f7'}; 
                                 color: white; border-radius: 50%; width: 12px; height: 12px; 
                                 border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
                         iconSize: [12, 12],
@@ -3078,7 +3326,7 @@
                         <div class="popup-title">${rotation.preference || rotation.programme_name}</div>
                         <div class="popup-detail"><strong>Location:</strong> ${rotation.location_name}</div>
                         <div class="popup-detail"><strong>Region:</strong> ${rotation.region}</div>
-                        <div class="popup-detail"><strong>Rating:</strong> ⭐ ${rotation.google_rating.toFixed(1)}</div>
+                        <div class="popup-detail"><strong>Rating:</strong> ⭐ ${rotation.google_rating ? rotation.google_rating.toFixed(1) : 'N/A'}</div>
                         <div class="popup-detail"><strong>Duration:</strong> ${rotation.duration_months} months</div>
                         <div class="popup-detail"><strong>Places:</strong> ${rotation.places_available}</div>
                         ${specialties.length > 0 ? `<div class="popup-detail"><strong>Specialties:</strong> ${specialties.join(', ')}</div>` : ''}

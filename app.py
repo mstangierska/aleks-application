@@ -328,10 +328,12 @@ def get_hospitals_extended():
 
 @app.route('/api/rotations')
 def get_all_rotations():
-    """Get ALL 1563 rotation programs with full details"""
+    """Get ALL rotation programs with full details"""
     import json
+    rotation_type = request.args.get('type', 'imt')
+    filename = 'all_rotations.json' if rotation_type == 'imt' else 'surgery_rotations.json'
     try:
-        with open('all_rotations.json', 'r') as f:
+        with open(filename, 'r') as f:
             rotations = json.load(f)
         return jsonify(rotations)
     except FileNotFoundError:
