@@ -440,6 +440,17 @@
     "google_rating": 3.9
   },
   {
+    "name": "GOSH",
+    "region": "London",
+    "sub_region": "London - Central",
+    "places_available": 0,
+    "has_haematology": true,
+    "lat": 51.5229,
+    "lon": -0.1206,
+    "hospital_name": "Great Ormond Street Hospital",
+    "google_rating": 4.5
+  },
+  {
     "name": "Royal Free",
     "region": "London",
     "sub_region": "London - North",
@@ -592,6 +603,17 @@
     "lon": -0.093,
     "hospital_name": "King's College Hospital",
     "google_rating": 3.7
+  },
+  {
+    "name": "Wrexham Maelor",
+    "region": "Wales",
+    "sub_region": "North Wales",
+    "places_available": 0,
+    "has_haematology": true,
+    "lat": 53.0468,
+    "lon": -2.992,
+    "hospital_name": "Wrexham Maelor Hospital",
+    "google_rating": 3.5
   },
   {
     "name": "St George's",
